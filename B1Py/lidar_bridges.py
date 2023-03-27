@@ -54,8 +54,6 @@ class ROSPointCloudListener:
         # _p = R @ p -> _p.T = p.T @ R.T
         self.points = _points[mask] @ self.R_IMULiDAR.T + self.P_IMULIDAR
 
-        return _points[mask]
-
     def close(self):
         """
         Stops the thread that is updating the Lidar data.
