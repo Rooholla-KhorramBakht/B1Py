@@ -80,7 +80,17 @@ class SE3ExtrinsicManager:
         T_parent = self.extrinsics.atPose3(X(self.name_to_id[parent])).matrix()
         T_child = self.extrinsics.atPose3(X(self.name_to_id[child])).matrix()
         return np.linalg.inv(T_parent) @ T_child  
-
+    
+    def get_all(self, reference):
+        """
+        Get transformations of all sensors relative to a given reference sensor.
+        
+        @param reference: Name of the reference sensor.
+        @return: A dictionary with keys as "<sensor_name>_wrt_<reference>" and values as 4x4 transformation matrices.
+        """
+        assert reference in self.name_to_id.keys(), "Selected reference frame is not in the graph"
+        return {f'{key}_wrt_{reference}':self.get(reference, key) for key in self.name_to_id.keys() if key != reference}
+    
     def pose2qt(self, T):
         """
         Convert a 4x4 transformation matrix to quaternion and translation vector.
