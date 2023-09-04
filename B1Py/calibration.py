@@ -99,3 +99,53 @@ class SE3ExtrinsicManager:
         @return: A 4x1 quaternion.
         """
         return gtsam.Rot3(T[:3, :3]).quaternion(), T[0:3,3]
+
+def parseVico2GtParams(params_file):
+    '''
+    Read the transformation matrix representing the pose of the vicon marker frame with respect to 
+    the robot IMU frame (B1 body frame) and return as a 4x4 numpy array.
+    '''
+    # Initialize variables to None
+    R_BtoI = None
+    p_BinI = None
+    
+    # Open the file and read line by line
+    with open(params_file, 'r') as f:
+        lines = f.readlines()
+        
+    reading_R = False
+    reading_p = False
+    R_rows = []
+    p_values = []
+    
+    for line in lines:
+        # Check if the line starts reading R_BtoI matrix or p_BinI vector
+        if "R_BtoI:" in line:
+            reading_R = True
+            continue
+        elif "p_BinI:" in line:
+            reading_p = True
+            continue
+        
+        # Read the values for R_BtoI
+        if reading_R:
+            if line.strip():  # not an empty line
+                R_rows.append(list(map(float, line.split())))
+            else:
+                reading_R = False
+                R_BtoI = np.array(R_rows)
+        
+        # Read the values for p_BinI
+        if reading_p:
+            if line.strip():  # not an empty line
+                p_values.append(float(line.strip()))
+            else:
+                reading_p = False
+                p_BinI = np.array(p_values)
+    
+    # Create the 4x4 transformation matrix
+    T_BtoI = np.identity(4)
+    T_BtoI[0:3, 0:3] = R_BtoI
+    T_BtoI[0:3, 3] = p_BinI
+    
+    return T_BtoI
