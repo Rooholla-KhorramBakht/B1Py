@@ -42,11 +42,11 @@ The following point to the documentations and Jupyter notebook examples for vari
 #### Learning Based
 - [Training an ActuatorNet for the Robot]()
 - [Walk These Ways: Tuning Robot Control for Generalization with Multiplicity of Behavior]()
-### Linear MPC
+#### Linear MPC
 ToDo
 #### Nonlinear MPC
 ToDo
-#### State Estimation
+### State Estimation
 - [Ground Reaction Force Estimation]()
 - [Contact Detection]()
 - [Loosely Coupled Kinematics Inertial Fusion (EKF)]()
