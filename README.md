@@ -44,9 +44,9 @@ The following point to the documentations and Jupyter notebook examples for vari
 - [Walk These Ways: Tuning Robot Control for Generalization with Multiplicity of Behavior]()
 ### Linear MPC
 ToDo
-### Nonlinear MPC
+#### Nonlinear MPC
 ToDo
-### State Estimation
+#### State Estimation
 - [Ground Reaction Force Estimation]()
 - [Contact Detection]()
 - [Loosely Coupled Kinematics Inertial Fusion (EKF)]()
