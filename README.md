@@ -17,13 +17,31 @@ cd B1Py
 ## Getting Started
 The following point to the documentations and Jupyter notebook examples for various use cases and procedures:
 ### Setup and Calibration
+- [Getting Started with the Robot]()
 - [Network Setup and Internet Sharing]()
 - [NTP Time Synchronization Between the Onboard Computers]()
-- [Onboard Realsense D430i Setup]()
+- [Vicon Communication Trough ROS](notebooks/vicon_tf.ipynb)
+- [Intel Realsense Trough ROS]()
+- [Intel Realsense Trough Python (librealsense2)]()
+- [Python Interface with the Robot (High-Level)]()
+- [Python Interface with the Robot (Low-Level)]()
 - [Extrinsic and Intrinsic Calibration]()
+- [Simulation using Pybullet]()
+- [Simulation using NVIDIA Isaac Sim]()
 
 ### Control
 - [Joystick with the Unitree High-Level Controller](notebooks/unitree_highlevel_joystick_control.ipynb)
-- [Position Control with Unitree High-Level Controller and Vicon](notebooks/unitree_highlevel_position_control_vicon.ipynb)
-- [Position Control with Unitree High-Level Controller and VIO/LiDAR]()
+- [Position Control with Unitree's Locomotion Controller and Vicon](notebooks/unitree_highlevel_position_control_vicon.ipynb)
+- [Position Control with Unitree's Locomotion Controller and VIO/LiDAR]()
+- [Unitree Locomotion Controller and CBFQP Obstacle Avoidance]()
+
+### RL
+- [Training an ActuatorNet for the Robot]()
+- [Walk These Ways: Tuning Robot Control for Generalization with Multiplicity of Behavior]()
+
+### State Estimation
+- [Ground Reaction Force Estimation]()
+- [Contact Detection]()
+- [Loosely Coupled Kinematics Inertial Fusion (EKF)]()
+- [Loosely Coupled Kinematics Inertial Fusion (Factor-Graph)]()
 
