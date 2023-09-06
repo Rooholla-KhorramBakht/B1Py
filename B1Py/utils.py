@@ -1,5 +1,5 @@
 import sys
-def addROS2Path(installation_path):
+def addROSPath(installation_path):
     """
     Add the ROS installation path to the python path.
 
