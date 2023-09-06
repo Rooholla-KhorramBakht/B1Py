@@ -100,7 +100,7 @@ class SE3ExtrinsicManager:
         """
         return gtsam.Rot3(T[:3, :3]).quaternion(), T[0:3,3]
 
-def parseVico2GtParams(params_file):
+def parseVicon2GtParams(params_file):
     '''
     Read the transformation matrix representing the pose of the vicon marker frame with respect to 
     the robot IMU frame (B1 body frame) and return as a 4x4 numpy array.
