@@ -11,7 +11,7 @@ from B1Py.simulators.isaacsim import B1SimLowLevel
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 
-PHYSICS_DT = 1/1000
+PHYSICS_DT = 1/400
 RENDERING_DT = 1/60
 
 world = World(physics_dt = PHYSICS_DT, rendering_dt = RENDERING_DT)
@@ -53,7 +53,7 @@ for i in range(5000):
         q_des = standup_phase1_q
     else:
         q_des = standup_phase2_q
-    action = (q_des-q)*140+ (0-dq)*5
+    action = (q_des-q)*100+ (0-dq)*4
     b1.set_action(action)
     world.step(render=True) 
     # execute one physics step and one rendering step
