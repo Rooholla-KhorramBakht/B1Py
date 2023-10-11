@@ -88,7 +88,7 @@ class B1SimLowLevel(Articulation):
         if position is not None:
             self._default_b1_state.base_frame.pos = np.asarray(position)
         else:
-            self._default_b1_state.base_frame.pos = np.array([0.0, 0.0, -1])
+            self._default_b1_state.base_frame.pos = np.array([0.0, 0.0, 0.0])
 
         self._default_b1_state.base_frame.quat = np.array([0.0, 0.0, 0.0, 1.0])
         self._default_b1_state.base_frame.ang_vel = np.array([0.0, 0.0, 0.0])

@@ -32,12 +32,12 @@ b1 = world.scene.add(
     B1SimLowLevel(
         prim_path="/World/B1",
         name="B1",
-        position=np.array([0, 0, 0.40]),
+        position=np.array([0, 0, 0.2]),
         physics_dt=PHYSICS_DT,
     )
 )
 world.reset()
-b1.disable_gravity()
+# b1.disable_gravity()
 b1.initialize()
 
 action = np.zeros((12,))
