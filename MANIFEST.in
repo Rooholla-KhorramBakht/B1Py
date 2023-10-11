@@ -1,1 +1,2 @@
 include B1Py/unitree_legged_sdk/*
+include B1Py/B1Py/assets/*
