@@ -31,7 +31,7 @@ The following point to the documentations and Jupyter notebook examples for vari
 - [IMU-Vicon Calibration and Ground-Truth Generation]()
 - [Calibration Results Aggregation and `B1Params` Class]()
 - [Simulation using Pybullet]()
-- [Simulation using NVIDIA Isaac Sim]()
+- [Simulation using NVIDIA Isaac Sim](docs/ISAACSIM.md)
 
 ### Control
 - [Joystick with the Unitree High-Level Controller](notebooks/unitree_highlevel_joystick_control.ipynb)
