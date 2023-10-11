@@ -11,7 +11,7 @@ from B1Py.simulators.isaacsim import B1SimLowLevel
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 
-PHYSICS_DT = 1/400
+PHYSICS_DT = 1/1000
 RENDERING_DT = 1/60
 
 world = World(physics_dt = PHYSICS_DT, rendering_dt = RENDERING_DT)
@@ -40,14 +40,21 @@ world.reset()
 # b1.disable_gravity()
 b1.initialize()
 
-action = np.zeros((12,))
-target_q1 = np.array([0.0, 1.45, -2.6] * 4)
+
+standup_phase1_q = np.array([0.0, 1.45, -2.6] * 4)
+standup_phase2_q = np.array([0.0, 1, -1.5] * 4)
+
 for i in range(5000):
     # things run in sync
-    state = b1.step(action)
+    state = b1.read_states()
     q = state.state.joint_pos
     dq = state.state.joint_vel
-    action = (target_q1-q)*15+ (0-dq)*1
+    if i < 1000:
+        q_des = standup_phase1_q
+    else:
+        q_des = standup_phase2_q
+    action = (q_des-q)*140+ (0-dq)*5
+    b1.set_action(action)
     world.step(render=True) 
     # execute one physics step and one rendering step
 

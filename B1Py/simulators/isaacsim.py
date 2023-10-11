@@ -251,7 +251,7 @@ class B1SimLowLevel(Articulation):
         self.update()
         return self._measurement
     
-    def set_actions(self, action):
+    def set_action(self, action):
         """[summary]
         sets the joint torques
         Argument:
