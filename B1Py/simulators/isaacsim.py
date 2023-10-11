@@ -88,21 +88,21 @@ class B1SimLowLevel(Articulation):
         if position is not None:
             self._default_b1_state.base_frame.pos = np.asarray(position)
         else:
-            self._default_b1_state.base_frame.pos = np.array([0.0, 0.0, 0.0])
+            self._default_b1_state.base_frame.pos = np.array([0.0, 0.0, -1])
 
         self._default_b1_state.base_frame.quat = np.array([0.0, 0.0, 0.0, 1.0])
         self._default_b1_state.base_frame.ang_vel = np.array([0.0, 0.0, 0.0])
         self._default_b1_state.base_frame.lin_vel = np.array([0.0, 0.0, 0.0])
-        self._default_b1_state.joint_pos = np.array([0.0, 1.2, -1.8, 0, 1.2, -1.8, 0.0, 1.2, -1.8, 0, 1.2, -1.8])
+        self._default_b1_state.joint_pos = np.array([0.56, 1.05, -2.64, 0.56, 1.05, -2.64, -0.56, 1.05, -2.64, -0.56, 1.05, -2.64])
         self._default_b1_state.joint_vel = np.zeros(12)
-
+        
         self._goal = np.zeros(3)
         self.meters_per_unit = get_stage_units()
 
         super().__init__(prim_path=self._prim_path, name=name, position=position, orientation=orientation)
 
         # contact sensor setup
-        self.feet_order = ["FL", "FR", "RL", "RR"]
+        self.feet_order = ["FL", "RL", "FR", "RR"]
         self.feet_path = [
             self._prim_path + "/FL_foot",
             self._prim_path + "/FR_foot",
@@ -126,6 +126,22 @@ class B1SimLowLevel(Articulation):
         self._FILTER_WINDOW_SIZE = 20
         self._foot_filters = [deque(), deque(), deque(), deque()]
 
+        # Translation maps between Isaac and Bullet
+        self.bullet_joint_order = ['FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint',
+                                   'RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint',
+                                   'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint',
+                                   'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint']
+        self.isaac_joint_order = [
+        'FL_hip_joint',   'FR_hip_joint',   'RL_hip_joint',   'RR_hip_joint',
+        'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint',
+        'FL_calf_joint',  'FR_calf_joint',  'RL_calf_joint',  'RR_calf_joint'
+        ]
+        
+        self.isaac_name_2_index = {s:i for i,s in enumerate(self.isaac_joint_order)}
+        self.bullet_name_2_index = {s:i for i,s in enumerate(self.bullet_joint_order)}
+        
+        self.to_bullet_index = np.array([self.isaac_name_2_index[id] for id in self.bullet_joint_order])
+        self.to_isaac_index =  np.array([self.bullet_name_2_index[id] for id in self.isaac_joint_order])
         # # imu sensor setup
         # self.imu_path = self._prim_path + "/imu_link"
         # self._imu_sensor = IMUSensor(
@@ -139,6 +155,12 @@ class B1SimLowLevel(Articulation):
         self.ang_vel = np.zeros(3)
         return
 
+    def toIsaacOrder(self, x):
+        return x[self.to_isaac_index,...]
+    
+    def toBulletOrder(self,x):
+        return x[self.to_bullet_index,...]
+    
     def set_state(self, state: B1State) -> None:
         """[Summary]
         
@@ -153,22 +175,12 @@ class B1SimLowLevel(Articulation):
         self.set_world_pose(position=state.base_frame.pos, orientation=state.base_frame.quat[[3, 0, 1, 2]])
         self.set_linear_velocity(state.base_frame.lin_vel)
         self.set_angular_velocity(state.base_frame.ang_vel)
-        # joint_state from the DC interface now has the order of
-        # 'FL_hip_joint',   'FR_hip_joint',   'RL_hip_joint',   'RR_hip_joint',
-        # 'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint',
-        # 'FL_calf_joint',  'FR_calf_joint',  'RL_calf_joint',  'RR_calf_joint'
-
-        # while the QP controller uses the order of
-        # FL_hip_joint FL_thigh_joint FL_calf_joint
-        # FR_hip_joint FR_thigh_joint FR_calf_joint
-        # RL_hip_joint RL_thigh_joint RL_calf_joint
-        # RR_hip_joint RR_thigh_joint RR_calf_joint
-        # we convert controller order to DC order for setting state
+        
         self.set_joint_positions(
-            positions=np.asarray(np.array(state.joint_pos.reshape([4, 3]).T.flat), dtype=np.float32)
+            positions=np.asarray(self.toIsaacOrder(state.joint_pos), dtype=np.float32)
         )
         self.set_joint_velocities(
-            velocities=np.asarray(np.array(state.joint_vel.reshape([4, 3]).T.flat), dtype=np.float32)
+            velocities=np.asarray(self.toIsaacOrder(state.joint_vel), dtype=np.float32)
         )
         self.set_joint_efforts(np.zeros_like(state.joint_pos))
         return
@@ -178,7 +190,7 @@ class B1SimLowLevel(Articulation):
         
         Updates processed contact sensor data from the robot feets, store them in member variable foot_force
         """
-        # Order: FL, FR, BL, BR
+        # Order: FL, RL, FR, RR
         for i in range(len(self.feet_path)):
             frame = self._contact_sensors[i].get_current_frame()
             if "force" in frame:
@@ -213,19 +225,8 @@ class B1SimLowLevel(Articulation):
         # joint pos and vel from the DC interface
         self.joint_state = super().get_joints_state()
 
-        # joint_state from the DC interface now has the order of
-        # 'FL_hip_joint',   'FR_hip_joint',   'RL_hip_joint',   'RR_hip_joint',
-        # 'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint',
-        # 'FL_calf_joint',  'FR_calf_joint',  'RL_calf_joint',  'RR_calf_joint'
-
-        # while the QP controller uses the order of
-        # FL_hip_joint FL_thigh_joint FL_calf_joint
-        # FR_hip_joint FR_thigh_joint FR_calf_joint
-        # RL_hip_joint RL_thigh_joint RL_calf_joint
-        # RR_hip_joint RR_thigh_joint RR_calf_joint
-        # we convert DC order to controller order for joint info
-        self._state.joint_pos = np.array(self.joint_state.positions.reshape([3, 4]).T.flat)
-        self._state.joint_vel = np.array(self.joint_state.velocities.reshape([3, 4]).T.flat)
+        self._state.joint_pos = self.toBulletOrder(self.joint_state.positions)
+        self._state.joint_vel = self.toBulletOrder(self.joint_state.velocities)
 
         # base frame
         base_pose = self.get_world_pose()
@@ -240,10 +241,27 @@ class B1SimLowLevel(Articulation):
         self._measurement.base_ang_vel = np.asarray(self.ang_vel)
         self._measurement.base_lin_acc = np.asarray(self.base_lin)
         return
-
+    
+    def read_states(self):
+        """[summary]
+        reads the state of the robot
+        Returns:
+        B1Measurement -- The state of the robot.
+        """
+        self.update()
+        return self._measurement
+    
+    def set_actions(self, action):
+        """[summary]
+        sets the joint torques
+        Argument:
+            action {np.ndarray} -- Joint torque command
+        """
+        self.set_joint_efforts(np.asarray(self.toIsaacOrder(action), dtype=np.float32))
+        return 
+    
     def step(self,action):
         """[summary]
-        
         compute desired torque and set articulation effort to robot joints
         
         Argument:
@@ -252,21 +270,7 @@ class B1SimLowLevel(Articulation):
         np.ndarray -- The desired joint torques for the robot.
         """
         self.update()
-        # self._command.desired_joint_torque = self._qp_controller.advance(dt, self._measurement, path_follow, auto_start)
-
-        # joint_state from the DC interface now has the order of
-        # 'FL_hip_joint',   'FR_hip_joint',   'RL_hip_joint',   'RR_hip_joint',
-        # 'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint',
-        # 'FL_calf_joint',  'FR_calf_joint',  'RL_calf_joint',  'RR_calf_joint'
-
-        # while the QP controller uses the order of
-        # FL_hip_joint FL_thigh_joint FL_calf_joint
-        # FR_hip_joint FR_thigh_joint FR_calf_joint
-        # RL_hip_joint RL_thigh_joint RL_calf_joint
-        # RR_hip_joint RR_thigh_joint RR_calf_joint
-        # we convert controller order to DC order for command torque
-        # torque_reorder = np.array(self._command.desired_joint_torque.reshape([4, 3]).T.flat)
-        self.set_joint_efforts(np.asarray(action, dtype=np.float32))
+        self.set_joint_efforts(np.asarray(self.toIsaacOrder(action), dtype=np.float32))
         return self._measurement
 
     def initialize(self, physics_sim_view=None) -> None:
