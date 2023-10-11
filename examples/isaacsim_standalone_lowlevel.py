@@ -43,8 +43,10 @@ b1.initialize()
 
 standup_phase1_q = np.array([0.0, 1.45, -2.6] * 4)
 standup_phase2_q = np.array([0.0, 1, -1.5] * 4)
-
+# import time
+# start = time.time()
 for i in range(5000):
+
     # things run in sync
     state = b1.read_states()
     q = state.state.joint_pos
@@ -53,9 +55,12 @@ for i in range(5000):
         q_des = standup_phase1_q
     else:
         q_des = standup_phase2_q
-    action = (q_des-q)*100+ (0-dq)*4
+    action = (q_des-q)*100+ (0-dq)*3
     b1.set_action(action)
     world.step(render=True) 
     # execute one physics step and one rendering step
+    # tock = time.time()
+    # print(1/(tock-start))
+    # start = tock
 
 simulation_app.close() # close Isaac Sim

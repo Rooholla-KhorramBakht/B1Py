@@ -142,15 +142,15 @@ class B1SimLowLevel(Articulation):
         
         self.to_bullet_index = np.array([self.isaac_name_2_index[id] for id in self.bullet_joint_order])
         self.to_isaac_index =  np.array([self.bullet_name_2_index[id] for id in self.isaac_joint_order])
-        # # imu sensor setup
-        # self.imu_path = self._prim_path + "/imu_link"
-        # self._imu_sensor = IMUSensor(
-        #     prim_path=self.imu_path + "/imu_sensor",
-        #     name="imu",
-        #     dt=physics_dt,
-        #     translation=np.array([0, 0, 0]),
-        #     orientation=np.array([1, 0, 0, 0]),
-        # )
+        # imu sensor setup
+        self.imu_path = self._prim_path + "/imu_link"
+        self._imu_sensor = IMUSensor(
+            prim_path=self.imu_path + "/imu_sensor",
+            name="imu",
+            dt=physics_dt,
+            translation=np.array([0, 0, 0]),
+            orientation=np.array([1, 0, 0, 0]),
+        )
         self.base_lin = np.zeros(3)
         self.ang_vel = np.zeros(3)
         return
@@ -220,7 +220,7 @@ class B1SimLowLevel(Articulation):
         """
 
         self.update_contact_sensor_data()
-        # self.update_imu_sensor_data()
+        self.update_imu_sensor_data()
 
         # joint pos and vel from the DC interface
         self.joint_state = super().get_joints_state()
