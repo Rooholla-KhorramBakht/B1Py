@@ -38,8 +38,8 @@ b1 = world.scene.add(
 )
 world.reset()
 b1.disable_gravity()
-# b1.initialize()
-print(b1.dof_names)
+b1.initialize()
+
 action = np.zeros((12,))
 target_q1 = np.array([0.0, 1.45, -2.6] * 4)
 for i in range(5000):
