@@ -1,4 +1,4 @@
-# B1Py
+# B1Py (In Progress)
 This repository hosts tools, documentations, example controllers, and state estimators for the Unitree B1 robot. Rather than focusing on a cutting-edge locomotion stack, this repository aims to bring simplicity by providing modular and reusable building blocks developed in Python. However, we do not stop here. Python Interfaces to advanced state estimators and controllers are also available for more serious use cases. 
 
 ![](docs/images/open_figure.png)
