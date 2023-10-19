@@ -11,14 +11,14 @@ from B1Py.simulators.isaacsim import B1SimLowLevel
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 
-PHYSICS_DT = 1/400
-RENDERING_DT = 1/60
+PHYSICS_DT = 1/200
+RENDERING_DT = 1/200
 
 world = World(physics_dt = PHYSICS_DT, rendering_dt = RENDERING_DT)
 
 assets_root_path = get_assets_root_path()
-if assets_root_path is None:
-    carb.log_error("Could not find Isaac Sim assets folder")
+# if assets_root_path is None:
+#     carb.log_error("Could not find Isaac Sim assets folder")
 
 # spawn warehouse scene
 prim = get_prim_at_path("/World/Warehouse")
@@ -45,7 +45,7 @@ standup_phase1_q = np.array([0.0, 1.45, -2.6] * 4)
 standup_phase2_q = np.array([0.0, 1, -1.5] * 4)
 # import time
 # start = time.time()
-for i in range(5000):
+for i in range(50000):
 
     # things run in sync
     state = b1.read_states()
@@ -55,9 +55,13 @@ for i in range(5000):
         q_des = standup_phase1_q
     else:
         q_des = standup_phase2_q
-    action = (q_des-q)*100+ (0-dq)*3
+    action = (q_des-q)*100+ (0-dq)*2.5
     b1.set_action(action)
-    world.step(render=True) 
+    if i%3 == 0:
+        world.step(render=True) 
+    else:
+        world.step(render=False) 
+
     # execute one physics step and one rendering step
     # tock = time.time()
     # print(1/(tock-start))
