@@ -21,11 +21,11 @@ assets_root_path = get_assets_root_path()
 #     carb.log_error("Could not find Isaac Sim assets folder")
 
 # spawn warehouse scene
-prim = get_prim_at_path("/World/Warehouse")
-if not prim.IsValid():
-    prim = define_prim("/World/Warehouse", "Xform")
-    asset_path = assets_root_path + "/Isaac/Environments/Simple_Warehouse/warehouse.usd"
-    prim.GetReferences().AddReference(asset_path)
+# prim = get_prim_at_path("/World/Warehouse")
+# if not prim.IsValid():
+#     prim = define_prim("/World/Warehouse", "Xform")
+#     asset_path = assets_root_path + "/Isaac/Environments/Simple_Warehouse/warehouse.usd"
+#     prim.GetReferences().AddReference(asset_path)
 
 # spawn a B1 robot
 b1 = world.scene.add(
