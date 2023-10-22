@@ -1,9 +1,0 @@
-package unitree_states;
-struct IMUState {
-  float accel[3];
-  float gyro[3];
-  float temparature;
-  float q[4];
-  float rpy[3];
-  float gravity;
-}

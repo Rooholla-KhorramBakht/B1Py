@@ -1,6 +1,0 @@
-package unitree_states;
-struct LegControlState {
-    float q[12];
-    float qd[12];
-    float tau_est[12];
-}

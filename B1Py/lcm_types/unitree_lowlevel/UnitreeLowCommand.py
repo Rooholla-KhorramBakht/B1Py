@@ -6,7 +6,7 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-class LegControlCommand(object):
+class UnitreeLowCommand(object):
     __slots__ = ["tau_ff", "q_des", "qd_des", "kp", "kd"]
 
     __typenames__ = ["float", "float", "float", "float", "float"]
@@ -22,7 +22,7 @@ class LegControlCommand(object):
 
     def encode(self):
         buf = BytesIO()
-        buf.write(LegControlCommand._get_packed_fingerprint())
+        buf.write(UnitreeLowCommand._get_packed_fingerprint())
         self._encode_one(buf)
         return buf.getvalue()
 
@@ -38,13 +38,13 @@ class LegControlCommand(object):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != LegControlCommand._get_packed_fingerprint():
+        if buf.read(8) != UnitreeLowCommand._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return LegControlCommand._decode_one(buf)
+        return UnitreeLowCommand._decode_one(buf)
     decode = staticmethod(decode)
 
     def _decode_one(buf):
-        self = LegControlCommand()
+        self = UnitreeLowCommand()
         self.tau_ff = struct.unpack('>12f', buf.read(48))
         self.q_des = struct.unpack('>12f', buf.read(48))
         self.qd_des = struct.unpack('>12f', buf.read(48))
@@ -54,7 +54,7 @@ class LegControlCommand(object):
     _decode_one = staticmethod(_decode_one)
 
     def _get_hash_recursive(parents):
-        if LegControlCommand in parents: return 0
+        if UnitreeLowCommand in parents: return 0
         tmphash = (0x83983b5eef75c5e1) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
@@ -62,12 +62,12 @@ class LegControlCommand(object):
     _packed_fingerprint = None
 
     def _get_packed_fingerprint():
-        if LegControlCommand._packed_fingerprint is None:
-            LegControlCommand._packed_fingerprint = struct.pack(">Q", LegControlCommand._get_hash_recursive([]))
-        return LegControlCommand._packed_fingerprint
+        if UnitreeLowCommand._packed_fingerprint is None:
+            UnitreeLowCommand._packed_fingerprint = struct.pack(">Q", UnitreeLowCommand._get_hash_recursive([]))
+        return UnitreeLowCommand._packed_fingerprint
     _get_packed_fingerprint = staticmethod(_get_packed_fingerprint)
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", LegControlCommand._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", UnitreeLowCommand._get_packed_fingerprint())[0]
 
