@@ -7,22 +7,27 @@ from io import BytesIO
 import struct
 
 class UnitreeLowState(object):
-    __slots__ = ["q", "qd", "tau_est", "accel", "gyro", "temparature", "quaternion", "rpy", "gravity"]
+    __slots__ = ["q", "dq", "tau_est", "contact_state", "accel", "gyro", "temparature", "quaternion", "rpy", "gravity", "gt_pos", "gt_quat", "gt_lin_vel", "gt_ang_vel"]
 
-    __typenames__ = ["float", "float", "float", "float", "float", "float", "float", "float", "float"]
+    __typenames__ = ["float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float"]
 
-    __dimensions__ = [[12], [12], [12], [3], [3], None, [4], [3], None]
+    __dimensions__ = [[12], [12], [12], [4], [3], [3], None, [4], [3], [3], [3], [3], [3], [3]]
 
     def __init__(self):
         self.q = [ 0.0 for dim0 in range(12) ]
-        self.qd = [ 0.0 for dim0 in range(12) ]
+        self.dq = [ 0.0 for dim0 in range(12) ]
         self.tau_est = [ 0.0 for dim0 in range(12) ]
+        self.contact_state = [ 0.0 for dim0 in range(4) ]
         self.accel = [ 0.0 for dim0 in range(3) ]
         self.gyro = [ 0.0 for dim0 in range(3) ]
         self.temparature = 0.0
         self.quaternion = [ 0.0 for dim0 in range(4) ]
         self.rpy = [ 0.0 for dim0 in range(3) ]
-        self.gravity = 0.0
+        self.gravity = [ 0.0 for dim0 in range(3) ]
+        self.gt_pos = [ 0.0 for dim0 in range(3) ]
+        self.gt_quat = [ 0.0 for dim0 in range(3) ]
+        self.gt_lin_vel = [ 0.0 for dim0 in range(3) ]
+        self.gt_ang_vel = [ 0.0 for dim0 in range(3) ]
 
     def encode(self):
         buf = BytesIO()
@@ -32,14 +37,19 @@ class UnitreeLowState(object):
 
     def _encode_one(self, buf):
         buf.write(struct.pack('>12f', *self.q[:12]))
-        buf.write(struct.pack('>12f', *self.qd[:12]))
+        buf.write(struct.pack('>12f', *self.dq[:12]))
         buf.write(struct.pack('>12f', *self.tau_est[:12]))
+        buf.write(struct.pack('>4f', *self.contact_state[:4]))
         buf.write(struct.pack('>3f', *self.accel[:3]))
         buf.write(struct.pack('>3f', *self.gyro[:3]))
         buf.write(struct.pack(">f", self.temparature))
         buf.write(struct.pack('>4f', *self.quaternion[:4]))
         buf.write(struct.pack('>3f', *self.rpy[:3]))
-        buf.write(struct.pack(">f", self.gravity))
+        buf.write(struct.pack('>3f', *self.gravity[:3]))
+        buf.write(struct.pack('>3f', *self.gt_pos[:3]))
+        buf.write(struct.pack('>3f', *self.gt_quat[:3]))
+        buf.write(struct.pack('>3f', *self.gt_lin_vel[:3]))
+        buf.write(struct.pack('>3f', *self.gt_ang_vel[:3]))
 
     def decode(data):
         if hasattr(data, 'read'):
@@ -54,20 +64,25 @@ class UnitreeLowState(object):
     def _decode_one(buf):
         self = UnitreeLowState()
         self.q = struct.unpack('>12f', buf.read(48))
-        self.qd = struct.unpack('>12f', buf.read(48))
+        self.dq = struct.unpack('>12f', buf.read(48))
         self.tau_est = struct.unpack('>12f', buf.read(48))
+        self.contact_state = struct.unpack('>4f', buf.read(16))
         self.accel = struct.unpack('>3f', buf.read(12))
         self.gyro = struct.unpack('>3f', buf.read(12))
         self.temparature = struct.unpack(">f", buf.read(4))[0]
         self.quaternion = struct.unpack('>4f', buf.read(16))
         self.rpy = struct.unpack('>3f', buf.read(12))
-        self.gravity = struct.unpack(">f", buf.read(4))[0]
+        self.gravity = struct.unpack('>3f', buf.read(12))
+        self.gt_pos = struct.unpack('>3f', buf.read(12))
+        self.gt_quat = struct.unpack('>3f', buf.read(12))
+        self.gt_lin_vel = struct.unpack('>3f', buf.read(12))
+        self.gt_ang_vel = struct.unpack('>3f', buf.read(12))
         return self
     _decode_one = staticmethod(_decode_one)
 
     def _get_hash_recursive(parents):
         if UnitreeLowState in parents: return 0
-        tmphash = (0xc6db044c51e703d2) & 0xffffffffffffffff
+        tmphash = (0x85fb86ebe5fbd9e9) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

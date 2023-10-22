@@ -20,7 +20,7 @@ class UnitreeLowCommand
 
         float      q_des[12];
 
-        float      qd_des[12];
+        float      dq_des[12];
 
         float      kp[12];
 
@@ -128,7 +128,7 @@ int UnitreeLowCommand::_encodeNoHash(void *buf, int offset, int maxlen) const
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->q_des[0], 12);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->qd_des[0], 12);
+    tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->dq_des[0], 12);
     if(tlen < 0) return tlen; else pos += tlen;
 
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->kp[0], 12);
@@ -150,7 +150,7 @@ int UnitreeLowCommand::_decodeNoHash(const void *buf, int offset, int maxlen)
     tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->q_des[0], 12);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->qd_des[0], 12);
+    tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->dq_des[0], 12);
     if(tlen < 0) return tlen; else pos += tlen;
 
     tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->kp[0], 12);
@@ -175,7 +175,7 @@ int UnitreeLowCommand::_getEncodedSizeNoHash() const
 
 uint64_t UnitreeLowCommand::_computeHash(const __lcm_hash_ptr *)
 {
-    uint64_t hash = 0x83983b5eef75c5e1LL;
+    uint64_t hash = 0x8398333f6b81d582LL;
     return (hash<<1) + ((hash>>63)&1);
 }
 
