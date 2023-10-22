@@ -1,0 +1,8 @@
+package unitree_states;
+struct LegControlCommand {
+    float tau_ff[12];
+    float q_des[12];
+    float qd_des[12];
+    float kp[12];
+    float kd[12];
+}
