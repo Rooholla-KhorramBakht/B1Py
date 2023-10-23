@@ -16,6 +16,8 @@ namespace unitree_lowlevel
 class UnitreeLowState
 {
     public:
+        double     stamp;
+
         float      q[12];
 
         float      dq[12];
@@ -38,7 +40,7 @@ class UnitreeLowState
 
         float      gt_pos[3];
 
-        float      gt_quat[3];
+        float      gt_quat[4];
 
         float      gt_lin_vel[3];
 
@@ -140,6 +142,9 @@ int UnitreeLowState::_encodeNoHash(void *buf, int offset, int maxlen) const
 {
     int pos = 0, tlen;
 
+    tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->stamp, 1);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->q[0], 12);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -173,7 +178,7 @@ int UnitreeLowState::_encodeNoHash(void *buf, int offset, int maxlen) const
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->gt_pos[0], 3);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->gt_quat[0], 3);
+    tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->gt_quat[0], 4);
     if(tlen < 0) return tlen; else pos += tlen;
 
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->gt_lin_vel[0], 3);
@@ -188,6 +193,9 @@ int UnitreeLowState::_encodeNoHash(void *buf, int offset, int maxlen) const
 int UnitreeLowState::_decodeNoHash(const void *buf, int offset, int maxlen)
 {
     int pos = 0, tlen;
+
+    tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->stamp, 1);
+    if(tlen < 0) return tlen; else pos += tlen;
 
     tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->q[0], 12);
     if(tlen < 0) return tlen; else pos += tlen;
@@ -222,7 +230,7 @@ int UnitreeLowState::_decodeNoHash(const void *buf, int offset, int maxlen)
     tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->gt_pos[0], 3);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->gt_quat[0], 3);
+    tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->gt_quat[0], 4);
     if(tlen < 0) return tlen; else pos += tlen;
 
     tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->gt_lin_vel[0], 3);
@@ -237,6 +245,7 @@ int UnitreeLowState::_decodeNoHash(const void *buf, int offset, int maxlen)
 int UnitreeLowState::_getEncodedSizeNoHash() const
 {
     int enc_size = 0;
+    enc_size += __double_encoded_array_size(NULL, 1);
     enc_size += __float_encoded_array_size(NULL, 12);
     enc_size += __float_encoded_array_size(NULL, 12);
     enc_size += __float_encoded_array_size(NULL, 12);
@@ -248,7 +257,7 @@ int UnitreeLowState::_getEncodedSizeNoHash() const
     enc_size += __float_encoded_array_size(NULL, 3);
     enc_size += __float_encoded_array_size(NULL, 3);
     enc_size += __float_encoded_array_size(NULL, 3);
-    enc_size += __float_encoded_array_size(NULL, 3);
+    enc_size += __float_encoded_array_size(NULL, 4);
     enc_size += __float_encoded_array_size(NULL, 3);
     enc_size += __float_encoded_array_size(NULL, 3);
     return enc_size;
@@ -256,7 +265,7 @@ int UnitreeLowState::_getEncodedSizeNoHash() const
 
 uint64_t UnitreeLowState::_computeHash(const __lcm_hash_ptr *)
 {
-    uint64_t hash = 0x85fb86ebe5fbd9e9LL;
+    uint64_t hash = 0xbcd019af2019fdecLL;
     return (hash<<1) + ((hash>>63)&1);
 }
 

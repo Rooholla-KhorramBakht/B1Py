@@ -57,7 +57,7 @@ class UnitreeB1(Articulation):
                 prim_path=self.feet_path[i] + "/sensor",
                 min_threshold=0,
                 max_threshold=1000000,
-                radius=0.03,
+                radius=0.043,
                 dt=physics_dt,
             )
 
@@ -79,10 +79,15 @@ class UnitreeB1(Articulation):
         self.gyro = np.zeros((3,))
         
         # Translation maps between Isaac and Bullet
-        self.bullet_joint_order = ['FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint',
-                                   'RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint',
-                                   'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint',
-                                   'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint']
+        # self.bullet_joint_order = ['FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint',
+        #                            'RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint',
+        #                            'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint',
+        #                            'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint']
+
+        self.bullet_joint_order =  ['FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint', 
+                                    'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint', 
+                                    'RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint', 
+                                    'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint']
         self.isaac_joint_order = [
         'FL_hip_joint',   'FR_hip_joint',   'RL_hip_joint',   'RR_hip_joint',
         'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint',
@@ -98,10 +103,10 @@ class UnitreeB1(Articulation):
         self.state = UnitreeLowState()
         self.init_pos = np.array([0., 0., 0.6])
         self.init_quat = np.array([0., 0., 0., 1.])
-        self.init_joint_pos = np.array([0.2, 0.8, -1.5,
-                                        0.2, 1.0, -1.6, 
-                                       -0.2, 0.8, -1.5, 
-                                       -0.2, 1.0, -1.6])
+        self.init_joint_pos = np.array([ 0.2, 0.8, -1.5,
+                                        -0.2, 0.8, -1.5, 
+                                         0.2, 1.0, -1.6, 
+                                        -0.2, 1.0, -1.6])
         return
 
     def toIsaacOrder(self, x):

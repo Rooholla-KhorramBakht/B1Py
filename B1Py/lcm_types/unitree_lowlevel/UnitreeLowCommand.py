@@ -7,13 +7,14 @@ from io import BytesIO
 import struct
 
 class UnitreeLowCommand(object):
-    __slots__ = ["tau_ff", "q_des", "dq_des", "kp", "kd"]
+    __slots__ = ["stamp", "tau_ff", "q_des", "dq_des", "kp", "kd"]
 
-    __typenames__ = ["float", "float", "float", "float", "float"]
+    __typenames__ = ["double", "float", "float", "float", "float", "float"]
 
-    __dimensions__ = [[12], [12], [12], [12], [12]]
+    __dimensions__ = [None, [12], [12], [12], [12], [12]]
 
     def __init__(self):
+        self.stamp = 0.0
         self.tau_ff = [ 0.0 for dim0 in range(12) ]
         self.q_des = [ 0.0 for dim0 in range(12) ]
         self.dq_des = [ 0.0 for dim0 in range(12) ]
@@ -27,6 +28,7 @@ class UnitreeLowCommand(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
+        buf.write(struct.pack(">d", self.stamp))
         buf.write(struct.pack('>12f', *self.tau_ff[:12]))
         buf.write(struct.pack('>12f', *self.q_des[:12]))
         buf.write(struct.pack('>12f', *self.dq_des[:12]))
@@ -45,6 +47,7 @@ class UnitreeLowCommand(object):
 
     def _decode_one(buf):
         self = UnitreeLowCommand()
+        self.stamp = struct.unpack(">d", buf.read(8))[0]
         self.tau_ff = struct.unpack('>12f', buf.read(48))
         self.q_des = struct.unpack('>12f', buf.read(48))
         self.dq_des = struct.unpack('>12f', buf.read(48))
@@ -55,7 +58,7 @@ class UnitreeLowCommand(object):
 
     def _get_hash_recursive(parents):
         if UnitreeLowCommand in parents: return 0
-        tmphash = (0x8398333f6b81d582) & 0xffffffffffffffff
+        tmphash = (0x3fa55736ccae518d) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

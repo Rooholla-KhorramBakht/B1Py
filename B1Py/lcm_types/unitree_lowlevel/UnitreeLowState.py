@@ -7,13 +7,14 @@ from io import BytesIO
 import struct
 
 class UnitreeLowState(object):
-    __slots__ = ["q", "dq", "tau_est", "contact_state", "accel", "gyro", "temparature", "quaternion", "rpy", "gravity", "gt_pos", "gt_quat", "gt_lin_vel", "gt_ang_vel"]
+    __slots__ = ["stamp", "q", "dq", "tau_est", "contact_state", "accel", "gyro", "temparature", "quaternion", "rpy", "gravity", "gt_pos", "gt_quat", "gt_lin_vel", "gt_ang_vel"]
 
-    __typenames__ = ["float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float"]
+    __typenames__ = ["double", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float"]
 
-    __dimensions__ = [[12], [12], [12], [4], [3], [3], None, [4], [3], [3], [3], [3], [3], [3]]
+    __dimensions__ = [None, [12], [12], [12], [4], [3], [3], None, [4], [3], [3], [3], [4], [3], [3]]
 
     def __init__(self):
+        self.stamp = 0.0
         self.q = [ 0.0 for dim0 in range(12) ]
         self.dq = [ 0.0 for dim0 in range(12) ]
         self.tau_est = [ 0.0 for dim0 in range(12) ]
@@ -25,7 +26,7 @@ class UnitreeLowState(object):
         self.rpy = [ 0.0 for dim0 in range(3) ]
         self.gravity = [ 0.0 for dim0 in range(3) ]
         self.gt_pos = [ 0.0 for dim0 in range(3) ]
-        self.gt_quat = [ 0.0 for dim0 in range(3) ]
+        self.gt_quat = [ 0.0 for dim0 in range(4) ]
         self.gt_lin_vel = [ 0.0 for dim0 in range(3) ]
         self.gt_ang_vel = [ 0.0 for dim0 in range(3) ]
 
@@ -36,6 +37,7 @@ class UnitreeLowState(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
+        buf.write(struct.pack(">d", self.stamp))
         buf.write(struct.pack('>12f', *self.q[:12]))
         buf.write(struct.pack('>12f', *self.dq[:12]))
         buf.write(struct.pack('>12f', *self.tau_est[:12]))
@@ -47,7 +49,7 @@ class UnitreeLowState(object):
         buf.write(struct.pack('>3f', *self.rpy[:3]))
         buf.write(struct.pack('>3f', *self.gravity[:3]))
         buf.write(struct.pack('>3f', *self.gt_pos[:3]))
-        buf.write(struct.pack('>3f', *self.gt_quat[:3]))
+        buf.write(struct.pack('>4f', *self.gt_quat[:4]))
         buf.write(struct.pack('>3f', *self.gt_lin_vel[:3]))
         buf.write(struct.pack('>3f', *self.gt_ang_vel[:3]))
 
@@ -63,6 +65,7 @@ class UnitreeLowState(object):
 
     def _decode_one(buf):
         self = UnitreeLowState()
+        self.stamp = struct.unpack(">d", buf.read(8))[0]
         self.q = struct.unpack('>12f', buf.read(48))
         self.dq = struct.unpack('>12f', buf.read(48))
         self.tau_est = struct.unpack('>12f', buf.read(48))
@@ -74,7 +77,7 @@ class UnitreeLowState(object):
         self.rpy = struct.unpack('>3f', buf.read(12))
         self.gravity = struct.unpack('>3f', buf.read(12))
         self.gt_pos = struct.unpack('>3f', buf.read(12))
-        self.gt_quat = struct.unpack('>3f', buf.read(12))
+        self.gt_quat = struct.unpack('>4f', buf.read(16))
         self.gt_lin_vel = struct.unpack('>3f', buf.read(12))
         self.gt_ang_vel = struct.unpack('>3f', buf.read(12))
         return self
@@ -82,7 +85,7 @@ class UnitreeLowState(object):
 
     def _get_hash_recursive(parents):
         if UnitreeLowState in parents: return 0
-        tmphash = (0x85fb86ebe5fbd9e9) & 0xffffffffffffffff
+        tmphash = (0xbcd019af2019fdec) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

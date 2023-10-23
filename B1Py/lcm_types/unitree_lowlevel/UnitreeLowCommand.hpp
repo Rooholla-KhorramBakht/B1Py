@@ -16,6 +16,8 @@ namespace unitree_lowlevel
 class UnitreeLowCommand
 {
     public:
+        double     stamp;
+
         float      tau_ff[12];
 
         float      q_des[12];
@@ -122,6 +124,9 @@ int UnitreeLowCommand::_encodeNoHash(void *buf, int offset, int maxlen) const
 {
     int pos = 0, tlen;
 
+    tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->stamp, 1);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->tau_ff[0], 12);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -144,6 +149,9 @@ int UnitreeLowCommand::_decodeNoHash(const void *buf, int offset, int maxlen)
 {
     int pos = 0, tlen;
 
+    tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->stamp, 1);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->tau_ff[0], 12);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -165,6 +173,7 @@ int UnitreeLowCommand::_decodeNoHash(const void *buf, int offset, int maxlen)
 int UnitreeLowCommand::_getEncodedSizeNoHash() const
 {
     int enc_size = 0;
+    enc_size += __double_encoded_array_size(NULL, 1);
     enc_size += __float_encoded_array_size(NULL, 12);
     enc_size += __float_encoded_array_size(NULL, 12);
     enc_size += __float_encoded_array_size(NULL, 12);
@@ -175,7 +184,7 @@ int UnitreeLowCommand::_getEncodedSizeNoHash() const
 
 uint64_t UnitreeLowCommand::_computeHash(const __lcm_hash_ptr *)
 {
-    uint64_t hash = 0x8398333f6b81d582LL;
+    uint64_t hash = 0x3fa55736ccae518dLL;
     return (hash<<1) + ((hash>>63)&1);
 }
 

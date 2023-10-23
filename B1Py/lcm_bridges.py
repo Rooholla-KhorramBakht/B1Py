@@ -81,7 +81,7 @@ class LCMBridgeClient:
         self.states = UnitreeLowState()
         # Threading Interface for handleing LCM
         self.lc = lcm.LCM("udpm://239.255.76.67:7667?ttl=1")
-        self.subscription = self.lc.subscribe(self.command_topic_name, self.state_callback)
+        self.subscription = self.lc.subscribe(self.state_topic_name, self.state_callback)
         self.subscription.set_queue_capacity(1)
 
     def sendCommands(self, cmd):
@@ -115,7 +115,7 @@ class LCMBridgeClient:
         @param channel: (str) The name of the LCM channel
         @param data: (bytes) The LCM message data
         """
-        self.states = UnitreeLowCommand.decode(data)
+        self.states = UnitreeLowState.decode(data)
 
     def close(self):
         """

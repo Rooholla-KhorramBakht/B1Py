@@ -17,8 +17,8 @@ from B1Py.lcm_types.unitree_lowlevel import UnitreeLowCommand, UnitreeLowState
 from B1Py.lcm_bridges import LCMBridgeServer
 from B1Py.sim.utils import simulationManager
 
-PHYSICS_DT = 1/200
-RENDERING_DT = 1/200
+PHYSICS_DT = 1/100
+RENDERING_DT = 1/100
 
 world = World(physics_dt = PHYSICS_DT, rendering_dt = RENDERING_DT)
 
@@ -56,12 +56,20 @@ cmd.kd = 12*[2.5]
 cmd.kp = 12*[100]
 cmd.dq_des = 12*[0]
 cmd.q_des = b1.init_joint_pos
-at_home = True
 
-sim_manager = simulationManager(robot=b1, lcm_server=lcm_server, default_cmd=cmd)
-
+sim_manager = simulationManager(robot=b1,
+                                 lcm_server=lcm_server,
+                                 default_cmd=cmd,
+                                 pysics_dt=PHYSICS_DT,
+                                 lcm_timeout=1e-4)
+counter = 0
 while simulation_app.is_running():
-    sim_manager.step()
-    world.step(render=True) 
+    sim_manager.step(counter*PHYSICS_DT)
+    # Step the world with rendering 50 times per second
+    if counter%2 ==0:
+        world.step(render=True) 
+    else:
+        world.step(render=False) 
 
+    counter+=1
 simulation_app.close() # close Isaac Sim
