@@ -15,7 +15,7 @@ class simulationManager():
         self.lcm_timeout = lcm_timeout
         self.pysics_dt = pysics_dt
         self.robot.setCommands(self.default_cmd)
-        
+
     def step(self, timestamp):
         # Read the robot's state and send it to the LCM client
         state = self.robot.readStates()
@@ -33,5 +33,6 @@ class simulationManager():
             self.robot.setCommands(lcm_cmd)
         else:
             self.missed_ticks +=1
-        if self.missed_ticks > 1/(self.lcm_timeout+self.pysics_dt): # stopped for more than a second?
+        if self.missed_ticks > 0.2/(self.lcm_timeout+self.pysics_dt): # stopped for more than a second?
             self.reset_required = True
+            self.robot.setCommands(self.default_cmd)
