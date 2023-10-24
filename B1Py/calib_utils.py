@@ -1,6 +1,7 @@
 import gtsam
 from gtsam.symbol_shorthand import X
 import numpy as np
+import yaml
 
 class SE3ExtrinsicManager:
     """
@@ -99,3 +100,104 @@ class SE3ExtrinsicManager:
         @return: A 4x1 quaternion.
         """
         return gtsam.Rot3(T[:3, :3]).quaternion(), T[0:3,3]
+
+
+def extractKalibrExtrinsic(file_path):
+    # Dictionary to store the extrinsic parameters
+    extrinsic_params = {}
+
+    # Open and read the YAML file
+    with open(file_path, 'r') as f:
+        yaml_data = yaml.safe_load(f)
+
+        # Iterate through the sensors in the yaml data
+        for sensor, data in yaml_data.items():
+            # For each sensor, extract the relevant transformation matrix
+            if 'T_cam_imu' in data:
+                extrinsic_params[f"{sensor}_T_cam_imu"] = data['T_cam_imu']
+            
+            if 'T_cn_cnm1' in data:
+                # Extract camera numbers from the sensor name
+                current_cam_num = int(sensor[-1])   # Last character of the sensor name, e.g. '1' from 'cam1'
+                last_cam_num = current_cam_num - 1  # Last camera in the chain
+                
+                # Change the key name to use explicit camera numbers
+                key_name = f"T_c{current_cam_num}_c{last_cam_num}"
+                extrinsic_params[key_name] = data['T_cn_cnm1']
+
+    return extrinsic_params
+
+def extractKalibrIntrinsics(file_path):
+    """
+    Extract the intrinsic parameters from a given YAML file.
+    
+    Parameters:
+    - file_path (str): The path to the input YAML file.
+    
+    Returns:
+    - dict: A dictionary containing the intrinsic parameters for each camera.
+            For each camera:
+            - intrinsics: Dictionary of intrinsic parameters based on the camera model.
+            - distortion_coeffs: Dictionary of distortion coefficients based on the distortion model.
+            - resolution: List containing camera resolution [width, height].
+            - camera_model: String specifying the camera model.
+            - distortion_model: String specifying the distortion model.
+    """
+
+    # Open and read the YAML file
+    with open(file_path, 'r') as f:
+        yaml_data = yaml.safe_load(f)
+
+    intrinsic_params = {}
+    for sensor, data in yaml_data.items():
+        sensor_data = {}
+        
+        # Extract camera model and intrinsics
+        camera_model = data['camera_model']
+        sensor_data['camera_model'] = camera_model
+        intrinsics = {}
+        if camera_model == 'pinhole':
+            intrinsics = {
+                'fu': data['intrinsics'][0],
+                'fv': data['intrinsics'][1],
+                'pu': data['intrinsics'][2],
+                'pv': data['intrinsics'][3]
+            }
+        elif camera_model == 'omni':
+            intrinsics = {
+                'xi': data['intrinsics'][0],
+                'fu': data['intrinsics'][1],
+                'fv': data['intrinsics'][2],
+                'pu': data['intrinsics'][3],
+                'pv': data['intrinsics'][4]
+            }
+        # ... add similar conditions for 'ds' and 'eucm'
+        
+        sensor_data['intrinsics'] = intrinsics
+
+        # Extract distortion model and coefficients
+        distortion_model = data['distortion_model']
+        sensor_data['distortion_model'] = distortion_model
+        coeffs = {}
+        if distortion_model == 'radtan':
+            coeffs = {
+                'k1': data['distortion_coeffs'][0],
+                'k2': data['distortion_coeffs'][1],
+                'r1': data['distortion_coeffs'][2],
+                'r2': data['distortion_coeffs'][3]
+            }
+        elif distortion_model == 'equi':
+            coeffs = {
+                'k1': data['distortion_coeffs'][0],
+                'k2': data['distortion_coeffs'][1],
+                'k3': data['distortion_coeffs'][2],
+                'k4': data['distortion_coeffs'][3]
+            }
+        # ... add similar conditions for 'fov' and 'none'
+
+        sensor_data['distortion_coeffs'] = coeffs
+        sensor_data['resolution'] = data['resolution']
+
+        intrinsic_params[sensor] = sensor_data
+
+    return intrinsic_params
