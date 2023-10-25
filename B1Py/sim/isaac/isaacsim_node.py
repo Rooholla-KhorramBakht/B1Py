@@ -10,7 +10,7 @@ from B1Py.sim.isaac.b1 import UnitreeB1
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 import sys
-sys.path.append('/home/robocaster/projects/libs/lcm/build/python')
+sys.path.append('/home/vr-station/projects/lcm/build/python')
 
 import time
 from B1Py.lcm_types.unitree_lowlevel import UnitreeLowCommand, UnitreeLowState
@@ -66,9 +66,10 @@ counter = 0
 while simulation_app.is_running():
     # sim_manager.step(counter*PHYSICS_DT)
     # Step the world with rendering 50 times per second
+    sim_manager.step(counter*PHYSICS_DT)
+
     if counter%2 ==0:
         world.step(render=True) 
-        sim_manager.step(counter*PHYSICS_DT)
     else:
         world.step(render=False) 
 

@@ -80,35 +80,33 @@ class HistoryWrapper:
 class CommandInterface():
     def __init__(self, limits=None):
         self.limits = limits
-
-    def get_command(self):
-        command = np.zeros((15,))
         gaits = \
             {"pronking": [0, 0, 0],
              "trotting": [0.5, 0, 0],
              "bounding": [0, 0.5, 0],
              "pacing":   [0, 0, 0.5]}
-        x_vel_cmd, y_vel_cmd, yaw_vel_cmd = 0.6, 0.0, 0.3
+        self.x_vel_cmd, self.y_vel_cmd, self.yaw_vel_cmd = 0.0, 0.0, 0.0
+        self.body_height_cmd = 0.
+        self.step_frequency_cmd = 2.5
+        self.gait = torch.tensor(gaits["trotting"])
+        self.footswing_height_cmd = 0.08
+        self.pitch_cmd = 0.
+        self.roll_cmd = 0.3
+        self.stance_width_cmd = 0.0
 
-        body_height_cmd = -0.0
-        step_frequency_cmd = 2
-        gait = torch.tensor(gaits["trotting"])
-        footswing_height_cmd = 0.0
-        pitch_cmd = 0.7
-        roll_cmd = 0.0
-        stance_width_cmd = 0.0
-
-        command[0] = x_vel_cmd
-        command[1] = y_vel_cmd
-        command[2] = yaw_vel_cmd
-        command[3] = body_height_cmd
-        command[4] = step_frequency_cmd
-        command[5:8] = gait
+    def get_command(self):
+        command = np.zeros((19,))
+        command[0] = self.x_vel_cmd
+        command[1] = self.y_vel_cmd
+        command[2] = self.yaw_vel_cmd
+        command[3] = self.body_height_cmd
+        command[4] = self.step_frequency_cmd
+        command[5:8] = self.gait
         command[8] = 0.5
-        command[9] = footswing_height_cmd
-        command[10] = pitch_cmd
-        command[11] = roll_cmd
-        command[12] = stance_width_cmd
+        command[9] = self.footswing_height_cmd
+        command[10] = self.pitch_cmd
+        command[11] = self.roll_cmd
+        command[12] = self.stance_width_cmd
         return command, False
     
 
@@ -124,18 +122,14 @@ class Policy:
         return action
     
 class IsaacSimAgent():
-    def __init__(self, cfg, command_profile, simulation_dt=0.01, control_dt =0.02, robot_name='b1'):
+    def __init__(self, cfg, command_profile, robot_name='b1'):
         self.robot_name = robot_name
-        self.simulation_dt = simulation_dt
         if not isinstance(cfg, dict):
             cfg = class_to_dict(cfg)
         self.cfg = cfg
         self.command_profile = command_profile
         self.lcm_bridge = LCMBridgeClient(robot_name=self.robot_name)
-
-        self.dt = control_dt
-        # self.dt = self.cfg["control"]["decimation"] * self.cfg["sim"]["dt"]
-        self.decimation_ratio = control_dt//simulation_dt
+        self.dt = self.cfg["control"]["decimation"] * self.cfg["sim"]["dt"]
         self.timestep = 0
 
         self.num_obs = self.cfg["env"]["num_observations"]
@@ -215,10 +209,14 @@ class IsaacSimAgent():
         else:
             self.obs_scales = self.cfg["normalization"]["obs_scales"]
 
+    def wait_for_state(self):
+        return self.lcm_bridge.getStates(timeout=2)
+    
     def get_obs(self):
         cmds, reset_timer = self.command_profile.get_command()
         self.commands[:, :] = cmds[:self.num_commands]
-        self.state = self.lcm_bridge.getStates(timeout=2)
+        
+        self.state = self.wait_for_state()
         
         if self.state is not None:
             self.gravity_vector = np.array(self.state.gravity)
