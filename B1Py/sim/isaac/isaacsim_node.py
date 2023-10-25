@@ -60,7 +60,7 @@ cmd.q_des = b1.init_joint_pos
 sim_manager = simulationManager(robot=b1,
                                  lcm_server=lcm_server,
                                  default_cmd=cmd,
-                                 pysics_dt=PHYSICS_DT,
+                                 physics_dt=PHYSICS_DT,
                                  lcm_timeout=1e-4)
 counter = 0
 while simulation_app.is_running():

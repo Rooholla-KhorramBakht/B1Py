@@ -3,7 +3,7 @@ class simulationManager():
                  robot, 
                  lcm_server, 
                  default_cmd,
-                 pysics_dt,
+                 physics_dt,
                  lcm_timeout = 0.01):
         
         self.robot = robot
@@ -13,7 +13,7 @@ class simulationManager():
         self.robot.initialize()
         self.reset_required = True
         self.lcm_timeout = lcm_timeout
-        self.pysics_dt = pysics_dt
+        self.physics_dt = physics_dt
         self.robot.setCommands(self.default_cmd)
 
     def step(self, timestamp):
@@ -33,6 +33,6 @@ class simulationManager():
             self.robot.setCommands(lcm_cmd)
         else:
             self.missed_ticks +=1
-        if self.missed_ticks > 0.2/(self.lcm_timeout+self.pysics_dt): # stopped for more than a second?
+        if self.missed_ticks > 0.2/(self.lcm_timeout+self.physics_dt): # stopped for more than a second?
             self.reset_required = True
             self.robot.setCommands(self.default_cmd)
