@@ -17,8 +17,8 @@ from B1Py.lcm_types.unitree_lowlevel import UnitreeLowCommand, UnitreeLowState
 from B1Py.lcm_bridges import LCMBridgeServer
 from B1Py.sim.utils import simulationManager
 
-PHYSICS_DT = 1/100
-RENDERING_DT = 1/100
+PHYSICS_DT = 1/200
+RENDERING_DT = 1/200
 
 world = World(physics_dt = PHYSICS_DT, rendering_dt = RENDERING_DT)
 
@@ -68,7 +68,7 @@ while simulation_app.is_running():
     # Step the world with rendering 50 times per second
     sim_manager.step(counter*PHYSICS_DT)
 
-    if counter%2 ==0:
+    if counter%4 ==0:
         world.step(render=True) 
     else:
         world.step(render=False) 
