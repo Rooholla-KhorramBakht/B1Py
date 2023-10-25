@@ -42,10 +42,13 @@ b1 = world.scene.add(
         physics_dt=PHYSICS_DT,
     )
 )
+
+lidar = world.scene.get_object("/World/B1/imu_link/Lidar")
+# breakpoint()
 world.reset()
 # b1.disable_gravity()
 b1.initialize()
-
+# lidar.add_point_cloud_data_to_frame()
 lcm_server = LCMBridgeServer(robot_name='b1')
 
 cmd_stamp = time.time()
@@ -70,6 +73,8 @@ while simulation_app.is_running():
 
     if counter%2 ==0:
         world.step(render=True) 
+        # print(lidar.get_current_frames().keys())
+
     else:
         world.step(render=False) 
 
