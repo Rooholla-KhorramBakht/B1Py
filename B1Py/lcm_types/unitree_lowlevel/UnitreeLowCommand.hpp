@@ -33,7 +33,7 @@ class UnitreeLowCommand
          * Encode a message into binary form.
          *
          * @param buf The output buffer.
-         * @param offset Encoding starts at thie byte offset into @p buf.
+         * @param offset Encoding starts at this byte offset into @p buf.
          * @param maxlen Maximum number of bytes to write.  This should generally be
          *  equal to getEncodedSize().
          * @return The number of bytes encoded, or <0 on error.
@@ -51,7 +51,7 @@ class UnitreeLowCommand
          * @param buf The buffer containing the encoded message.
          * @param offset The byte offset into @p buf where the encoded message starts.
          * @param maxlen The maximum number of bytes to read while decoding.
-         * @return The number of bytes decoded, or <0 if an error occured.
+         * @return The number of bytes decoded, or <0 if an error occurred.
          */
         inline int decode(const void *buf, int offset, int maxlen);
 

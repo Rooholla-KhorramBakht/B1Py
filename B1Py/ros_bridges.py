@@ -1,9 +1,10 @@
-import sys
-import rospy
-import numpy as np
-import tf
 import threading
+
+import numpy as np
+import rospy
+import tf
 import tf.transformations as transformations
+
 
 def terminateRosNode():
     """
@@ -11,7 +12,8 @@ def terminateRosNode():
     """
     rospy.signal_shutdown("Node closed by user")
 
-def initRosNode(node_name='b1py_node'):
+
+def initRosNode(node_name="b1py_node"):
     """
     Initialize a ROS node within the current python process.
 
@@ -21,25 +23,26 @@ def initRosNode(node_name='b1py_node'):
     rospy.init_node(node_name)
     rospy.loginfo("Node initialized")
 
+
 class ROSTFListener:
     """
-    This class listens to ROS TF messages and keeps track of the transformation 
-    between a parent and child frame as they get published. 
+    This class listens to ROS TF messages and keeps track of the transformation
+    between a parent and child frame as they get published.
     The pose is represented as a 4x4 homogeneous transformation matrix.
-    
+
     Attributes:
         parent_frame (str): The name of the parent frame.
         child_frame (str): The name of the child frame.
         rate (int): Rate at which the TF listener updates.
-        callback (func): A user-defined callback function that takes a 4x4 
+        callback (func): A user-defined callback function that takes a 4x4
                          homogeneous matrix as input.
         T (ndarray): 4x4 pose matrix of child with respect to parent.
     """
-    
+
     def __init__(self, parent_frame, child_frame, callback=None, rate=100):
         """
         Initialize the TF listener.
-        
+
         Parameters:
             parent_frame (str): The name of the parent frame.
             child_frame (str): The name of the child frame.
@@ -69,19 +72,25 @@ class ROSTFListener:
         rate = rospy.Rate(self.rate)
         while not self.stop_thread and not rospy.is_shutdown():
             try:
-                (trans, rot) = self.tf_listener.lookupTransform(self.parent_frame, self.child_frame, rospy.Time(0))
-                
+                (trans, rot) = self.tf_listener.lookupTransform(
+                    self.parent_frame, self.child_frame, rospy.Time(0)
+                )
+
                 # Update the rotation part of the homogeneous transformation matrix
                 self.T[:3, :3] = transformations.quaternion_matrix(rot)[:3, :3]
-                
+
                 # Update the translation part of the homogeneous transformation matrix
                 self.T[:3, 3] = trans
-                
+
                 # If a callback is provided, call it
                 if self.callback:
                     self.callback(self.T)
 
-            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+            except (
+                tf.LookupException,
+                tf.ConnectivityException,
+                tf.ExtrapolationException,
+            ):
                 rospy.loginfo("TF not ready")
 
             rate.sleep()
@@ -97,19 +106,19 @@ class ROSTFListener:
 class ROSTFPublisher:
     """
     This class allows users to publish ROS TF messages to describe the transformation
-    between a parent and child frame. The pose is represented as a 4x4 homogeneous 
+    between a parent and child frame. The pose is represented as a 4x4 homogeneous
     transformation matrix.
-    
+
     Attributes:
         parent_frame (str): The name of the parent frame.
         child_frame (str): The name of the child frame.
         broadcaster (tf.TransformBroadcaster): The TF broadcaster used for publishing TFs.
     """
-    
+
     def __init__(self, parent_frame, child_frame):
         """
         Initialize the TF publisher.
-        
+
         Parameters:
             parent_frame (str): The name of the parent frame.
             child_frame (str): The name of the child frame.
@@ -123,7 +132,7 @@ class ROSTFPublisher:
     def publish(self, T):
         """
         Publishes the transformation matrix as a TF message.
-        
+
         Parameters:
             T (ndarray): 4x4 homogeneous transformation matrix.
         """
@@ -135,10 +144,5 @@ class ROSTFPublisher:
 
         # Publish the TF
         self.broadcaster.sendTransform(
-            trans,
-            rot,
-            rospy.Time.now(),
-            self.child_frame,
-            self.parent_frame
+            trans, rot, rospy.Time.now(), self.child_frame, self.parent_frame
         )
-

@@ -30,7 +30,7 @@ class UnitreeLowState
 
         float      gyro[3];
 
-        float      temparature;
+        float      temperature;
 
         float      quaternion[4];
 
@@ -51,7 +51,7 @@ class UnitreeLowState
          * Encode a message into binary form.
          *
          * @param buf The output buffer.
-         * @param offset Encoding starts at thie byte offset into @p buf.
+         * @param offset Encoding starts at this byte offset into @p buf.
          * @param maxlen Maximum number of bytes to write.  This should generally be
          *  equal to getEncodedSize().
          * @return The number of bytes encoded, or <0 on error.
@@ -69,7 +69,7 @@ class UnitreeLowState
          * @param buf The buffer containing the encoded message.
          * @param offset The byte offset into @p buf where the encoded message starts.
          * @param maxlen The maximum number of bytes to read while decoding.
-         * @return The number of bytes decoded, or <0 if an error occured.
+         * @return The number of bytes decoded, or <0 if an error occurred.
          */
         inline int decode(const void *buf, int offset, int maxlen);
 
@@ -163,7 +163,7 @@ int UnitreeLowState::_encodeNoHash(void *buf, int offset, int maxlen) const
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->gyro[0], 3);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->temparature, 1);
+    tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->temperature, 1);
     if(tlen < 0) return tlen; else pos += tlen;
 
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->quaternion[0], 4);
@@ -215,7 +215,7 @@ int UnitreeLowState::_decodeNoHash(const void *buf, int offset, int maxlen)
     tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->gyro[0], 3);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->temparature, 1);
+    tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->temperature, 1);
     if(tlen < 0) return tlen; else pos += tlen;
 
     tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->quaternion[0], 4);
@@ -265,7 +265,7 @@ int UnitreeLowState::_getEncodedSizeNoHash() const
 
 uint64_t UnitreeLowState::_computeHash(const __lcm_hash_ptr *)
 {
-    uint64_t hash = 0xbcd019af2019fdecLL;
+    uint64_t hash = 0x63fba9ef911d1605LL;
     return (hash<<1) + ((hash>>63)&1);
 }
 

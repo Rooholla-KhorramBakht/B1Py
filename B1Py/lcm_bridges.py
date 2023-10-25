@@ -1,26 +1,27 @@
-import lcm
-from B1Py.lcm_types.unitree_lowlevel import UnitreeLowCommand, UnitreeLowState
-from time import sleep
-import time
 import select
-import numpy as np
+
+import lcm
+
+from B1Py.lcm_types.unitree_lowlevel import UnitreeLowCommand, UnitreeLowState
+
 
 class LCMBridgeServer:
-
     def __init__(
         self,
         robot_name="robot1",
     ):
-        
+
         self.state = None
         self.trigger_timestamp = 0
         self.robot_name = robot_name
         self.state_topic_name = f"{robot_name}_state"
         self.command_topic_name = f"{robot_name}_command"
         self.commands = UnitreeLowCommand()
-        # Threading Interface for handleing LCM
+        # Threading Interface for handling LCM
         self.lc = lcm.LCM("udpm://239.255.76.67:7667?ttl=1")
-        self.subscription = self.lc.subscribe(self.command_topic_name, self.command_callback)
+        self.subscription = self.lc.subscribe(
+            self.command_topic_name, self.command_callback
+        )
         self.subscription.set_queue_capacity(1)
 
     def getCommands(self, timeout=0.1):
@@ -34,7 +35,7 @@ class LCMBridgeServer:
             return self.commands
         else:
             return None
-    
+
     def sendStates(self, state):
         """
         Send a joint command to the robot.
@@ -67,21 +68,22 @@ class LCMBridgeServer:
 
 
 class LCMBridgeClient:
-
     def __init__(
         self,
         robot_name="robot1",
     ):
-        
+
         self.state = None
         self.trigger_timestamp = 0
         self.robot_name = robot_name
         self.state_topic_name = f"{robot_name}_state"
         self.command_topic_name = f"{robot_name}_command"
         self.states = UnitreeLowState()
-        # Threading Interface for handleing LCM
+        # Threading Interface for handling LCM
         self.lc = lcm.LCM("udpm://239.255.76.67:7667?ttl=1")
-        self.subscription = self.lc.subscribe(self.state_topic_name, self.state_callback)
+        self.subscription = self.lc.subscribe(
+            self.state_topic_name, self.state_callback
+        )
         self.subscription.set_queue_capacity(1)
 
     def sendCommands(self, cmd):
@@ -91,7 +93,6 @@ class LCMBridgeClient:
         """
         self.lc.publish(self.command_topic_name, cmd.encode())
 
-    
     def getStates(self, timeout):
         """
         Send a joint command to the robot.

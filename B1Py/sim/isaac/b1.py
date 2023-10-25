@@ -1,20 +1,17 @@
-from omni.isaac.core.utils.stage import get_current_stage, get_stage_units
-import numpy as np
-from typing import Optional, List
-from omni.isaac.core.utils.prims import get_prim_at_path, define_prim
-from omni.isaac.sensor import ContactSensor, IMUSensor
 from collections import deque
+from typing import Optional
+
 import numpy as np
-from omni.isaac.core.articulations import Articulation
-from dataclasses import field, dataclass
-import numpy as np
-from omni.isaac.quadruped.utils.types import NamedTuple, FrameState
-import B1Py
-from B1Py.lcm_types.unitree_lowlevel import UnitreeLowCommand, UnitreeLowState
 import pypose as pp
+from omni.isaac.core.articulations import Articulation
+from omni.isaac.core.utils.prims import define_prim
+from omni.isaac.sensor import ContactSensor, IMUSensor
+
+import B1Py
+from B1Py.lcm_types.unitree_lowlevel import UnitreeLowState
+
 
 class UnitreeB1(Articulation):
-
     def __init__(
         self,
         prim_path: str,
@@ -25,21 +22,26 @@ class UnitreeB1(Articulation):
     ) -> None:
         """
         [Summary]
-        
+
         initialize robot, set up sensors and interfaces
-        
+
         Args:
             prim_path {str} -- prim path of the robot on the stage
             name {str} -- name of the quadruped
             physics_dt {float} -- physics downtime of the controller
             position {np.ndarray} -- position of the robot
-            orientation {np.ndarray} -- orientation of the robot        
+            orientation {np.ndarray} -- orientation of the robot
         """
         self._prim_path = prim_path
         prim = define_prim(self._prim_path, "Xform")
         prim.GetReferences().AddReference(B1Py.USD_PATH)
 
-        super().__init__(prim_path=self._prim_path, name=name, position=position, orientation=orientation)
+        super().__init__(
+            prim_path=self._prim_path,
+            name=name,
+            position=position,
+            orientation=orientation,
+        )
 
         # contact sensor setup
         self.feet_order = ["FL", "RL", "FR", "RR"]
@@ -77,47 +79,69 @@ class UnitreeB1(Articulation):
         )
         self.accel = np.zeros((3,))
         self.gyro = np.zeros((3,))
-        
+
         # Translation maps between Isaac and Bullet
         # self.bullet_joint_order = ['FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint',
         #                            'RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint',
         #                            'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint',
         #                            'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint']
 
-        self.bullet_joint_order =  ['FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint', 
-                                    'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint', 
-                                    'RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint', 
-                                    'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint']
-        self.isaac_joint_order = [
-        'FL_hip_joint',   'FR_hip_joint',   'RL_hip_joint',   'RR_hip_joint',
-        'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint',
-        'FL_calf_joint',  'FR_calf_joint',  'RL_calf_joint',  'RR_calf_joint'
+        self.bullet_joint_order = [
+            "FL_hip_joint",
+            "FL_thigh_joint",
+            "FL_calf_joint",
+            "FR_hip_joint",
+            "FR_thigh_joint",
+            "FR_calf_joint",
+            "RL_hip_joint",
+            "RL_thigh_joint",
+            "RL_calf_joint",
+            "RR_hip_joint",
+            "RR_thigh_joint",
+            "RR_calf_joint",
         ]
-        
-        self.isaac_name_2_index = {s:i for i,s in enumerate(self.isaac_joint_order)}
-        self.bullet_name_2_index = {s:i for i,s in enumerate(self.bullet_joint_order)}
-        
-        self.to_bullet_index = np.array([self.isaac_name_2_index[id] for id in self.bullet_joint_order])
-        self.to_isaac_index =  np.array([self.bullet_name_2_index[id] for id in self.isaac_joint_order])
+        self.isaac_joint_order = [
+            "FL_hip_joint",
+            "FR_hip_joint",
+            "RL_hip_joint",
+            "RR_hip_joint",
+            "FL_thigh_joint",
+            "FR_thigh_joint",
+            "RL_thigh_joint",
+            "RR_thigh_joint",
+            "FL_calf_joint",
+            "FR_calf_joint",
+            "RL_calf_joint",
+            "RR_calf_joint",
+        ]
+
+        self.isaac_name_2_index = {s: i for i, s in enumerate(self.isaac_joint_order)}
+        self.bullet_name_2_index = {s: i for i, s in enumerate(self.bullet_joint_order)}
+
+        self.to_bullet_index = np.array(
+            [self.isaac_name_2_index[id] for id in self.bullet_joint_order]
+        )
+        self.to_isaac_index = np.array(
+            [self.bullet_name_2_index[id] for id in self.isaac_joint_order]
+        )
         self.tau_est = np.zeros((12,))
         self.state = UnitreeLowState()
-        self.init_pos = np.array([0., 0., 0.6])
-        self.init_quat = np.array([0., 0., 0., 1.])
-        self.init_joint_pos = np.array([ 0.2, 0.8, -1.5,
-                                        -0.2, 0.8, -1.5, 
-                                         0.2, 1.0, -1.6, 
-                                        -0.2, 1.0, -1.6])
+        self.init_pos = np.array([0.0, 0.0, 0.6])
+        self.init_quat = np.array([0.0, 0.0, 0.0, 1.0])
+        self.init_joint_pos = np.array(
+            [0.2, 0.8, -1.5, -0.2, 0.8, -1.5, 0.2, 1.0, -1.6, -0.2, 1.0, -1.6]
+        )
         return
 
     def toIsaacOrder(self, x):
-        return x[self.to_isaac_index,...]
-    
-    def toBulletOrder(self,x):
-        return x[self.to_bullet_index,...]
-    
+        return x[self.to_isaac_index, ...]
+
+    def toBulletOrder(self, x):
+        return x[self.to_bullet_index, ...]
+
     def setState(self, pos, quat, q) -> None:
         """[Summary]
-        
+
         Set the kinematic state of the robot.
 
         Args:
@@ -131,7 +155,7 @@ class UnitreeB1(Articulation):
         self.set_world_pose(position=pos, orientation=quat[[3, 0, 1, 2]])
         self.set_linear_velocity(np.zeros((3,)))
         self.set_angular_velocity(np.zeros((3,)))
-        
+
         self.set_joint_positions(
             positions=np.asarray(self.toIsaacOrder(q), dtype=np.float32)
         )
@@ -140,7 +164,7 @@ class UnitreeB1(Articulation):
         )
         self.set_joint_efforts(np.zeros_like(q))
         return
-    
+
     def initialize(self, physics_sim_view=None) -> None:
         """[summary]
 
@@ -150,15 +174,15 @@ class UnitreeB1(Articulation):
         super().initialize(physics_sim_view=physics_sim_view)
         self.get_articulation_controller().set_effort_modes("force")
         self.get_articulation_controller().switch_control_mode("effort")
-        self.setState( self.init_pos, self.init_quat, self.init_joint_pos)
+        self.setState(self.init_pos, self.init_quat, self.init_joint_pos)
         for i in range(4):
             self._contact_sensors[i].initialize()
         return
 
     def readContactSensor(self) -> None:
         """[summary]
-        
-        Updates processed contact sensor data from the robot feets, store them in member variable foot_force
+
+        Updates processed contact sensor data from the robot feet, store them in member variable foot_force
         """
         # Order: FL, RL, FR, RR
         for i in range(len(self.feet_path)):
@@ -176,7 +200,7 @@ class UnitreeB1(Articulation):
 
     def readIMUSensor(self) -> None:
         """[summary]
-        
+
         Updates processed imu sensor data from the robot body, store them in member variable base_lin and ang_vel
         """
         frame = self._imu_sensor.get_current_frame()
@@ -212,10 +236,14 @@ class UnitreeB1(Articulation):
         self.state.gt_lin_vel = base_lin_vel.tolist()
         self.state.gt_ang_vel = base_ang_vel.tolist()
         self.state.contact_state = contact_forces.tolist()
-        projected_gravity = pp.SO3(base_quat).matrix().T@np.array([0., 0., -1.]).reshape(3,1)
-        self.state.gravity = projected_gravity.squeeze().numpy().astype(np.float32).tolist()
+        projected_gravity = pp.SO3(base_quat).matrix().T @ np.array(
+            [0.0, 0.0, -1.0]
+        ).reshape(3, 1)
+        self.state.gravity = (
+            projected_gravity.squeeze().numpy().astype(np.float32).tolist()
+        )
         return self.state
-    
+
     def setCommands(self, cmd):
         """[summary]
         sets the joint torques
@@ -229,13 +257,12 @@ class UnitreeB1(Articulation):
         tau_ff = np.array(cmd.tau_ff)
         q_des = np.array(cmd.q_des)
         dq_des = np.array(cmd.dq_des)
-        tau = (q_des-q)*kp+ (dq_des-dq)*kd + tau_ff
+        tau = (q_des - q) * kp + (dq_des - dq) * kd + tau_ff
         self.set_joint_efforts(np.asarray(self.toIsaacOrder(tau), dtype=np.float32))
         self.tau_est = tau
-        return 
-    
+        return
+
     def step(self, cmd):
         self.readStates()
         self.setCommands(cmd)
         return self.state
-
