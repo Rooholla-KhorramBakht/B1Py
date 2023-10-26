@@ -3,7 +3,10 @@ import time
 
 import numpy as np
 import numpy.linalg as LA
+import pinocchio as pin
 import robot_interface as sdk
+
+import hppfcl  # isort: skip
 
 
 class B1HighLevelReal:
@@ -27,6 +30,26 @@ class B1HighLevelReal:
         self.cmd.reserve = 0
         self.ready = False
         self.cmd_watchdog_timer = time.time()
+
+        package_directory = "/home/bolun/Documents/B1Py/B1Py/assets/urdf"
+        urdf_path = package_directory + "/b1.urdf"
+        self.pin_robot = pin.RobotWrapper.BuildFromURDF(urdf_path, package_directory)
+
+        # for calf collision detection
+        self.calf_ids = {
+            "FL": self.pin_robot.model.getFrameId("FL_calf"),
+            "RL": self.pin_robot.model.getFrameId("RL_calf"),
+            "FR": self.pin_robot.model.getFrameId("FR_calf"),
+            "RR": self.pin_robot.model.getFrameId("RR_calf"),
+        }
+
+        # create leg cylinders hppfcl instances
+        self.fl_cylinder_hppfcl = hppfcl.Cylinder(0.05, 0.5)
+        self.rl_cylinder_hppfcl = hppfcl.Cylinder(0.05, 0.5)
+        self.fr_cylinder_hppfcl = hppfcl.Cylinder(0.05, 0.5)
+        self.rr_cylinder_hppfcl = hppfcl.Cylinder(0.05, 0.5)
+        self.calf_offset = pin.SE3(np.eye(3), np.array([0.005237, 0.0, -0.15]))
+
         self.running = True
         self.loop_thread = threading.Thread(target=self.loop_fn)
         self.loop_thread.start()
@@ -52,20 +75,30 @@ class B1HighLevelReal:
     def getIMU(self):
         accel = self.state.imu.accelerometer
         gyro = self.state.imu.gyroscope
-        q = self.state.imu.quaternion
+        quat = self.state.imu.quaternion
         rpy = self.state.imu.rpy
-        return accel, gyro, q, rpy
+        return accel, gyro, quat, rpy
 
     def getJointStates(self):
-        return None
+        """Returns the joint angles (q) and velocities (dq) of the robot"""
+        motorStates = self.state.motorState
+        _q, _dq = zip(
+            *[(motorState.q, motorState.dq) for motorState in motorStates[:12]]
+        )
+        q, dq = np.array(_q), np.array(_dq)
+
+        return q, dq
 
     def getBatteryState(self):
-        return None
+        """Returns the battery percentage of the robot"""
+        batteryState = self.state.bms
+
+        return batteryState.SOC
 
     def setCommand(
         self, v_x, v_y, omega_z, bodyHeight=0.0, footRaiseHeight=0.0, mode=2
     ):
-        assert mode in [0, 2], "Only mode2: walking and mode0: idea is allowed"
+        assert mode in [0, 2], "Only mode 2: walking and mode 0: idea is allowed"
         self.cmd_watchdog_timer = time.time()
         self.cmd.mode = mode
         self.cmd.bodyHeight = np.clip(bodyHeight, -0.15, 0.1)
@@ -76,3 +109,44 @@ class B1HighLevelReal:
     def close(self):
         self.running = False
         self.loop_thread.join()
+
+    def check_calf_collision(self, q):
+        self.pin_robot.framesForwardKinematics(q)
+
+        fl_calf_pose = self.pin_robot.data.oMf[self.calf_ids["FL"]] * self.calf_offset
+        rl_calf_pose = self.pin_robot.data.oMf[self.calf_ids["RL"]] * self.calf_offset
+        fr_calf_pose = self.pin_robot.data.oMf[self.calf_ids["FR"]] * self.calf_offset
+        rr_calf_pose = self.pin_robot.data.oMf[self.calf_ids["RR"]] * self.calf_offset
+
+        # compute distance between calf cylinders
+        req = hppfcl.CollisionRequest()
+        res = hppfcl.CollisionResult()
+
+        T_fl = hppfcl.Transform3f(fl_calf_pose.rotation, fl_calf_pose.translation)
+        T_rl = hppfcl.Transform3f(rl_calf_pose.rotation, rl_calf_pose.translation)
+        T_fr = hppfcl.Transform3f(fr_calf_pose.rotation, fr_calf_pose.translation)
+        T_rr = hppfcl.Transform3f(rr_calf_pose.rotation, rr_calf_pose.translation)
+
+        col_fl_rl = hppfcl.collide(
+            self.fl_cylinder_hppfcl, T_fl, self.rl_cylinder_hppfcl, T_rl, req, res
+        )
+        col_fl_fr = hppfcl.collide(
+            self.fl_cylinder_hppfcl, T_fl, self.fr_cylinder_hppfcl, T_fr, req, res
+        )
+        col_fl_rr = hppfcl.collide(
+            self.fl_cylinder_hppfcl, T_fl, self.rr_cylinder_hppfcl, T_rr, req, res
+        )
+        col_rl_fr = hppfcl.collide(
+            self.rl_cylinder_hppfcl, T_rl, self.fr_cylinder_hppfcl, T_fr, req, res
+        )
+        col_rl_rr = hppfcl.collide(
+            self.rl_cylinder_hppfcl, T_rl, self.rr_cylinder_hppfcl, T_rr, req, res
+        )
+        col_fr_rr = hppfcl.collide(
+            self.fr_cylinder_hppfcl, T_fr, self.rr_cylinder_hppfcl, T_rr, req, res
+        )
+        in_collision = np.all(
+            [col_fl_rl, col_fl_fr, col_fl_rr, col_rl_fr, col_rl_rr, col_fr_rr]
+        )
+
+        return in_collision
