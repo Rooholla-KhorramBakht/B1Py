@@ -5,6 +5,8 @@ import sys
 architecture = platform.architecture()[0]
 machine = platform.machine()
 USD_PATH = os.path.join(os.path.dirname(__file__), "assets/usd/b1.usd")
+URDF_DIR_PATH = os.path.join(os.path.dirname(__file__), "assets/urdf")
+
 if architecture == "64bit":
     if "x86_64" in machine:
         lib_path = os.path.join(os.path.dirname(__file__), "unitree_legged_sdk/amd64")
