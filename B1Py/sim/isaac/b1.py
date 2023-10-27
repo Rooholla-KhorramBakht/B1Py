@@ -67,7 +67,6 @@ class UnitreeB1(Articulation):
         self.enable_foot_filter = True
         self._FILTER_WINDOW_SIZE = 20
         self._foot_filters = [deque(), deque(), deque(), deque()]
-        breakpoint()
         # imu sensor setup
         self.imu_path = self._prim_path + "/imu_link"
         self._imu_sensor = IMUSensor(
