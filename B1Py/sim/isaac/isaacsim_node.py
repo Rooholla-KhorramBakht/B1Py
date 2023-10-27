@@ -72,7 +72,9 @@ sim_manager = simulationManager(
     physics_dt=PHYSICS_DT,
     lcm_timeout=1e-4,
 )
-lidar_data_pipe = NumpyMemMapDataPipe("lidar_data_pipe", force=True,dtype='float32',shape=(300,16,3))
+lidar_data_pipe = NumpyMemMapDataPipe(
+    "lidar_data_pipe", force=True, dtype="float32", shape=(300, 16, 3)
+)
 counter = 0
 while simulation_app.is_running():
     # sim_manager.step(counter*PHYSICS_DT)
@@ -80,7 +82,7 @@ while simulation_app.is_running():
     sim_manager.step(counter * PHYSICS_DT)
     if counter % 2 == 0:
         world.step(render=True)
-        lidar_data_pipe.write(np.random.rand(300,16,3))
+        lidar_data_pipe.write(np.random.rand(300, 16, 3))
         # print(lidar.get_current_frames().keys())
 
     else:
