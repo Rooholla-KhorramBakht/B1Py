@@ -54,6 +54,13 @@ class B1HighLevelReal:
         self.loop_thread = threading.Thread(target=self.loop_fn)
         self.loop_thread.start()
 
+        # for velocity clipping
+        self.vx_max = 0.5
+        self.vy_max = 0.4
+        self.P_v_max = np.diag([1 / self.vx_max**2, 1 / self.vy_max**2])
+        self.omega_max = 0.5
+        self.omega_min = -0.5
+
     def loop_fn(self):
         while self.running:
             self.udp.Recv()
@@ -103,7 +110,8 @@ class B1HighLevelReal:
         self.cmd.mode = mode
         self.cmd.bodyHeight = np.clip(bodyHeight, -0.15, 0.1)
         self.cmd.footRaiseHeight = np.clip(footRaiseHeight, -0.1, 0.1)
-        self.cmd.velocity = [v_x, v_y]
+        _v_x, _v_y = self.clip_velocity(v_x, v_y)
+        self.cmd.velocity = [_v_x, _v_y]
         self.cmd.yawSpeed = omega_z
 
     def close(self):
@@ -111,7 +119,9 @@ class B1HighLevelReal:
         self.loop_thread.join()
 
     def check_calf_collision(self, q):
-        self.pin_robot.framesForwardKinematics(q)
+        q_pin = self.q_map_b12pin(q)
+
+        self.pin_robot.framesForwardKinematics(q_pin)
 
         fl_calf_pose = self.pin_robot.data.oMf[self.calf_ids["FL"]] * self.calf_offset
         rl_calf_pose = self.pin_robot.data.oMf[self.calf_ids["RL"]] * self.calf_offset
@@ -150,3 +160,29 @@ class B1HighLevelReal:
         )
 
         return in_collision
+
+    def q_map_b12pin(self, q):
+        """
+        B1 gives the joint angles in the order of
+        FR, FL, RR, RL (hip, thigh, calf)
+
+        Pinocchio expects the joint angles in the order of
+        FL, FR, RL, RR (hip, thigh, calf)
+
+        This function maps the joint angles from B1 to Pinocchio
+        """
+        q_fr = q[:3]
+        q_fl = q[3:6]
+        q_rr = q[6:9]
+        q_rl = q[9:]
+
+        q_pin = np.concatenate([q_fl, q_fr, q_rl, q_rr])
+
+        return q_pin
+
+    def clip_velocity(self, v_x, v_y):
+        _v = np.array([[v_x], [v_y]])
+        _scale = np.sqrt(_v.T @ self.P_v_max @ _v)
+        scale = np.clip(_scale, 0, 1)
+
+        return scale * v_x, scale * v_y
