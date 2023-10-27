@@ -58,7 +58,7 @@ lidar = world.scene.add(
 )
 lidar.add_depth_data_to_frame()
 lidar.add_point_cloud_data_to_frame()
-lidar.set_rotation_frequency(10)
+lidar.set_rotation_frequency(0)
 lidar.set_resolution([0.4,2])
 # lidar.enable_visualization()
 lidar.prim.GetAttribute("highLod").Set(True)
@@ -86,7 +86,7 @@ sim_manager = simulationManager(
     lcm_timeout=1e-4,
 )
 lidar_data_pipe = NumpyMemMapDataPipe(
-    "lidar_data_pipe", force=True, dtype="float32", shape=(90, 16, 3)
+    "lidar_data_pipe", force=True, dtype="float32", shape=(900, 16, 3)
 )
 counter = 0
 while simulation_app.is_running():
@@ -97,6 +97,7 @@ while simulation_app.is_running():
         world.step(render=True)
         # breakpoint()
         pc = lidar.get_current_frame()['point_cloud']
+        # print(pc.shape)
         lidar_data_pipe.write(pc, match_length=True)
     else:
         world.step(render=False)
