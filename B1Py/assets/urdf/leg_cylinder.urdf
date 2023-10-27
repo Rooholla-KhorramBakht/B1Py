@@ -1,0 +1,21 @@
+<?xml version="0.0" ?>
+<robot name="leg_cylinder">
+  <link name="base_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="1e-5"/>
+       <inertia ixx="1e-10" ixy="0" ixz="0" iyy="1e-10" iyz="0" izz="1e-10"/>
+    </inertial>
+
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.5"/>
+      </geometry>
+      <material name="cornflowerblue">
+        <color rgba="0.3921 0.5843 0.9294 0.5"/>
+      </material>
+    </visual>
+
+  </link>
+</robot>
