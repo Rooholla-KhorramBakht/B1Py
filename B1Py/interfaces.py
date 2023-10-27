@@ -10,7 +10,7 @@ import hppfcl  # isort: skip
 
 
 class B1HighLevelReal:
-    def __init__(self, loop_frequency=100):
+    def __init__(self, loop_frequency=100, test=False):
         self.loop_frequency = loop_frequency
         HIGHLEVEL = 0xEE
         self.udp = sdk.UDP(HIGHLEVEL, 8080, "192.168.123.220", 8082)
@@ -50,16 +50,17 @@ class B1HighLevelReal:
         self.rr_cylinder_hppfcl = hppfcl.Cylinder(0.05, 0.5)
         self.calf_offset = pin.SE3(np.eye(3), np.array([0.005237, 0.0, -0.15]))
 
-        self.running = True
-        self.loop_thread = threading.Thread(target=self.loop_fn)
-        self.loop_thread.start()
-
         # for velocity clipping
         self.vx_max = 0.5
         self.vy_max = 0.4
         self.P_v_max = np.diag([1 / self.vx_max**2, 1 / self.vy_max**2])
         self.omega_max = 0.5
         self.omega_min = -0.5
+
+        if not test:
+            self.running = True
+            self.loop_thread = threading.Thread(target=self.loop_fn)
+            self.loop_thread.start()
 
     def loop_fn(self):
         while self.running:
@@ -182,7 +183,11 @@ class B1HighLevelReal:
 
     def clip_velocity(self, v_x, v_y):
         _v = np.array([[v_x], [v_y]])
-        _scale = np.sqrt(_v.T @ self.P_v_max @ _v)
-        scale = np.clip(_scale, 0, 1)
+        _scale = np.sqrt(_v.T @ self.P_v_max @ _v)[0, 0]
+
+        if _scale > 1.0:
+            scale = 1.0 / _scale
+        else:
+            scale = 1.0
 
         return scale * v_x, scale * v_y
