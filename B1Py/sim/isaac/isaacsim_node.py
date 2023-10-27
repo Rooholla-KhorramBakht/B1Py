@@ -10,6 +10,7 @@ simulation_app = SimulationApp({"headless": False})  # we can also run as headle
 from omni.isaac.core import World
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
+from omni.isaac.sensor import RotatingLidarPhysX
 
 from B1Py.sim.isaac.b1 import UnitreeB1
 
@@ -47,7 +48,6 @@ b1 = world.scene.add(
         physics_dt=PHYSICS_DT,
     )
 )
-b1.initialize()
 
 # Add Lidar
 lidar = world.scene.add(
@@ -65,6 +65,7 @@ lidar.prim.GetAttribute("highLod").Set(True)
 lidar.prim.GetAttribute("highLod").Set(True)
 
 world.reset()
+b1.initialize()
 
 lcm_server = LCMBridgeServer(robot_name="b1")
 
@@ -85,7 +86,7 @@ sim_manager = simulationManager(
     lcm_timeout=1e-4,
 )
 lidar_data_pipe = NumpyMemMapDataPipe(
-    "lidar_data_pipe", force=True, dtype="float32", shape=(300, 16, 3)
+    "lidar_data_pipe", force=True, dtype="float32", shape=(90, 16, 3)
 )
 counter = 0
 while simulation_app.is_running():
@@ -94,9 +95,9 @@ while simulation_app.is_running():
     sim_manager.step(counter * PHYSICS_DT)
     if counter % 2 == 0:
         world.step(render=True)
-        lidar_data_pipe.write(np.random.rand(300, 16, 3))
-        print(lidar.get_current_frame().keys())
-        print(lidar.get_current_frame()['point_cloud'].shape)
+        # breakpoint()
+        pc = lidar.get_current_frame()['point_cloud']
+        lidar_data_pipe.write(pc, match_length=True)
     else:
         world.step(render=False)
 

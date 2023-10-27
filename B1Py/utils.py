@@ -28,11 +28,14 @@ class NumpyMemMapDataPipe:
                 "/dev/shm/" + channel_name, dtype=self.dtype, mode="r+", shape=shape
             )
 
-    def write(self, data):
-        assert (
-            data.shape == self.shape
-        ), "The data and the shape of the shared memory must match"
-        self.shm[:] = data
+    def write(self, data, match_length=True):
+        if match_length:
+            self.shm[:data.shape[0],...] = data
+        else:
+            assert (
+                data.shape == self.shape
+            ), "The data and the shape of the shared memory must match"
+            self.shm[:] = data
 
     def read(self):
         return self.shm.copy()
