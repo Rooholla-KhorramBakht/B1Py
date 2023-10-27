@@ -71,6 +71,7 @@ class LCMBridgeClient:
     def __init__(
         self,
         robot_name="robot1",
+        user_callback=None,
     ):
 
         self.state = None
@@ -79,6 +80,7 @@ class LCMBridgeClient:
         self.state_topic_name = f"{robot_name}_state"
         self.command_topic_name = f"{robot_name}_command"
         self.states = UnitreeLowState()
+        self.user_callback = user_callback  # Callback function to be executed when a new state is received
         # Threading Interface for handling LCM
         self.lc = lcm.LCM("udpm://239.255.76.67:7667?ttl=1")
         self.subscription = self.lc.subscribe(
@@ -117,6 +119,8 @@ class LCMBridgeClient:
         @param data: (bytes) The LCM message data
         """
         self.states = UnitreeLowState.decode(data)
+        if self.user_callback is not None:
+            self.user_callback(self.states)
 
     def close(self):
         """
