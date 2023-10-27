@@ -51,15 +51,17 @@ b1 = world.scene.add(
 
 # Add Lidar
 lidar = world.scene.add(
-    RotatingLidarPhysX(prim_path="/World/B1/imu_link/lidar", 
-                       name="lidar", 
-                       translation=[0.16,0.,0.14],
-                       orientation=[0., 0., 0., 1.])
+    RotatingLidarPhysX(
+        prim_path="/World/B1/imu_link/lidar",
+        name="lidar",
+        translation=[0.16, 0.0, 0.14],
+        orientation=[0.0, 0.0, 0.0, 1.0],
+    )
 )
 lidar.add_depth_data_to_frame()
 lidar.add_point_cloud_data_to_frame()
 lidar.set_rotation_frequency(0)
-lidar.set_resolution([0.4,2])
+lidar.set_resolution([0.4, 2])
 # lidar.enable_visualization()
 lidar.prim.GetAttribute("highLod").Set(True)
 lidar.prim.GetAttribute("highLod").Set(True)
@@ -89,16 +91,16 @@ lidar_data_pipe = NumpyMemMapDataPipe(
     "lidar_data_pipe", force=True, dtype="float32", shape=(900, 16, 3)
 )
 counter = 0
+
 while simulation_app.is_running():
     # sim_manager.step(counter*PHYSICS_DT)
     # Step the world with rendering 50 times per second
     sim_manager.step(counter * PHYSICS_DT)
+    pc = lidar.get_current_frame()["point_cloud"]
+    lidar_data_pipe.write(pc, match_length=True)
+
     if counter % 2 == 0:
         world.step(render=True)
-        # breakpoint()
-        pc = lidar.get_current_frame()['point_cloud']
-        # print(pc.shape)
-        lidar_data_pipe.write(pc, match_length=True)
     else:
         world.step(render=False)
 
