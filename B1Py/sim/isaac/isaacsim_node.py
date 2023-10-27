@@ -47,13 +47,25 @@ b1 = world.scene.add(
         physics_dt=PHYSICS_DT,
     )
 )
-
-# lidar = world.scene.get_object("/World/B1/imu_link/Lidar")
-# breakpoint()
-world.reset()
-# b1.disable_gravity()
 b1.initialize()
-# lidar.add_point_cloud_data_to_frame()
+
+# Add Lidar
+lidar = world.scene.add(
+    RotatingLidarPhysX(prim_path="/World/B1/imu_link/lidar", 
+                       name="lidar", 
+                       translation=[0.16,0.,0.14],
+                       orientation=[0., 0., 0., 1.])
+)
+lidar.add_depth_data_to_frame()
+lidar.add_point_cloud_data_to_frame()
+lidar.set_rotation_frequency(10)
+lidar.set_resolution([0.4,2])
+# lidar.enable_visualization()
+lidar.prim.GetAttribute("highLod").Set(True)
+lidar.prim.GetAttribute("highLod").Set(True)
+
+world.reset()
+
 lcm_server = LCMBridgeServer(robot_name="b1")
 
 cmd_stamp = time.time()
@@ -83,8 +95,8 @@ while simulation_app.is_running():
     if counter % 2 == 0:
         world.step(render=True)
         lidar_data_pipe.write(np.random.rand(300, 16, 3))
-        # print(lidar.get_current_frames().keys())
-
+        print(lidar.get_current_frame().keys())
+        print(lidar.get_current_frame()['point_cloud'].shape)
     else:
         world.step(render=False)
 
