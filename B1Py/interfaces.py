@@ -156,7 +156,7 @@ class B1HighLevelReal:
         col_fr_rr = hppfcl.collide(
             self.fr_cylinder_hppfcl, T_fr, self.rr_cylinder_hppfcl, T_rr, req, res
         )
-        in_collision = np.all(
+        in_collision = np.any(
             [col_fl_rl, col_fl_fr, col_fl_rr, col_rl_fr, col_rl_rr, col_fr_rr]
         )
 

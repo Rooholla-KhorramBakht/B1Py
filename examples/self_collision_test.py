@@ -146,7 +146,6 @@ if __name__ == "__main__":
         )
 
         print(in_collision)
-        # breakpoint()
 
         p.resetBasePositionAndOrientation(
             fl_cylinder,
