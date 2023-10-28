@@ -1,18 +1,20 @@
 # launch Isaac Sim before any other imports
 # default first two lines in any standalone application
 import sys
+
 import numpy as np
 from omni.isaac.kit import SimulationApp
 
 simulation_app = SimulationApp({"headless": False})  # we can also run as headless.
 
+# import cv2
 from omni.isaac.core import World
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 from omni.isaac.sensor import RotatingLidarPhysX
+
 from B1Py.sim.isaac.b1 import UnitreeB1
 from B1Py.sim.isaac.utils import AnnotatorManager
-import cv2
 
 sys.path.append("/home/vr-station/projects/lcm/build/python")
 
@@ -51,15 +53,17 @@ b1 = world.scene.add(
 
 # Add Lidar
 lidar = world.scene.add(
-    RotatingLidarPhysX(prim_path="/World/B1/imu_link/lidar", 
-                       name="lidar", 
-                       translation=[0.16,0.,0.14],
-                       orientation=[0., 0., 0., 1.])
+    RotatingLidarPhysX(
+        prim_path="/World/B1/imu_link/lidar",
+        name="lidar",
+        translation=[0.16, 0.0, 0.14],
+        orientation=[0.0, 0.0, 0.0, 1.0],
+    )
 )
 lidar.add_depth_data_to_frame()
 lidar.add_point_cloud_data_to_frame()
 lidar.set_rotation_frequency(0)
-lidar.set_resolution([0.4,2])
+lidar.set_resolution([0.4, 2])
 # lidar.enable_visualization()
 lidar.prim.GetAttribute("highLod").Set(True)
 lidar.prim.GetAttribute("highLod").Set(True)
@@ -70,15 +74,27 @@ b1.initialize()
 # Add cameras
 # Create cameras
 ann = AnnotatorManager(world)
-ann.registerCamera("/World/B1/imu_link", "camera_left", (0.485, 0.0258, 0.028), (-90., 180., 90.), resolution=(640, 480))   
-ann.registerCamera("/World/B1/imu_link", "camera_right", (0.485, 0.0258-0.05, 0.028), (-90., 180., 90.), resolution=(640, 480))   
-ann.registerAnnotator('rgb', 'camera_left')
-ann.registerAnnotator('rgb', 'camera_right')
-ann.registerAnnotator('distance_to_camera', 'camera_left')
-ann.setFocalLength('camera_left', 28)
-ann.setClippingRange('camera_left', 0.2, 1000000.0)
-ann.setFocalLength('camera_right', 28)
-ann.setClippingRange('camera_right', 0.2, 1000000.0)
+ann.registerCamera(
+    "/World/B1/imu_link",
+    "camera_left",
+    (0.485, 0.0258, 0.028),
+    (-90.0, 180.0, 90.0),
+    resolution=(640, 480),
+)
+ann.registerCamera(
+    "/World/B1/imu_link",
+    "camera_right",
+    (0.485, 0.0258 - 0.05, 0.028),
+    (-90.0, 180.0, 90.0),
+    resolution=(640, 480),
+)
+ann.registerAnnotator("rgb", "camera_left")
+ann.registerAnnotator("rgb", "camera_right")
+ann.registerAnnotator("distance_to_camera", "camera_left")
+ann.setFocalLength("camera_left", 28)
+ann.setClippingRange("camera_left", 0.2, 1000000.0)
+ann.setFocalLength("camera_right", 28)
+ann.setClippingRange("camera_right", 0.2, 1000000.0)
 
 lcm_server = LCMBridgeServer(robot_name="b1")
 cmd_stamp = time.time()
@@ -117,13 +133,13 @@ while simulation_app.is_running():
     sim_manager.step(counter * PHYSICS_DT)
     if counter % 2 == 0:
         world.step(render=True)
-        pc = lidar.get_current_frame()['point_cloud']
+        pc = lidar.get_current_frame()["point_cloud"]
         lidar_data_pipe.write(pc, match_length=True)
 
-        img_left = ann.getData('camera_left:rgb')
-        img_right = ann.getData('camera_right:rgb')
-        depth_left = ann.getData('camera_left:distance_to_camera')
-        if img_left.shape[0]!=0 and img_right.shape[0]!=0:
+        img_left = ann.getData("camera_left:rgb")
+        img_right = ann.getData("camera_right:rgb")
+        depth_left = ann.getData("camera_left:distance_to_camera")
+        if img_left.shape[0] != 0 and img_right.shape[0] != 0:
             # cv2.imshow(f"rgb-left", img_left)
             # cv2.imshow(f"rgb-right", img_right)
             # cv2.imshow(f"depth", depth_left)
