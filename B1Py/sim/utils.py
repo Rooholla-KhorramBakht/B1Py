@@ -1,6 +1,5 @@
 class simulationManager:
     def __init__(self, robot, lcm_server, default_cmd, physics_dt, lcm_timeout=0.01):
-
         self.robot = robot
         self.lcm_server = lcm_server
         self.missed_ticks = 0

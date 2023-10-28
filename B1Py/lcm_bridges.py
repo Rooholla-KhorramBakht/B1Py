@@ -10,7 +10,6 @@ class LCMBridgeServer:
         self,
         robot_name="robot1",
     ):
-
         self.state = None
         self.trigger_timestamp = 0
         self.robot_name = robot_name
@@ -73,7 +72,6 @@ class LCMBridgeClient:
         robot_name="robot1",
         user_callback=None,
     ):
-
         self.state = None
         self.trigger_timestamp = 0
         self.robot_name = robot_name
