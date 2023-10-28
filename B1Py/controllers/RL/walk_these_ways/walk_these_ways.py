@@ -351,7 +351,6 @@ class IsaacSimAgent:
         return None
 
     def publish_action(self, action, hard_reset=False):
-
         command_for_robot = UnitreeLowCommand()
         self.joint_pos_target = (
             action[0, :12].detach().cpu().numpy() * self.cfg["control"]["action_scale"]
