@@ -30,7 +30,7 @@ class NumpyMemMapDataPipe:
 
     def write(self, data, match_length=True):
         if match_length:
-            self.shm[:data.shape[0],...] = data
+            self.shm[: data.shape[0], ...] = data
         else:
             assert (
                 data.shape == self.shape
