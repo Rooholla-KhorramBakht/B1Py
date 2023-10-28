@@ -1,7 +1,6 @@
 # launch Isaac Sim before any other imports
 # default first two lines in any standalone application
 import sys
-
 import numpy as np
 from omni.isaac.kit import SimulationApp
 
@@ -11,8 +10,11 @@ from omni.isaac.core import World
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 from omni.isaac.sensor import RotatingLidarPhysX
-
+import omni.replicator.core as rep
+from pxr import UsdGeom
+from omni.replicator.core import Writer, AnnotatorRegistry
 from B1Py.sim.isaac.b1 import UnitreeB1
+import cv2
 
 sys.path.append("/home/vr-station/projects/lcm/build/python")
 
@@ -66,6 +68,21 @@ lidar.prim.GetAttribute("highLod").Set(True)
 
 world.reset()
 b1.initialize()
+# Add cameras
+# Create cameras
+
+camera = world.stage.DefinePrim("/World/B1/imu_link/Camera1", "Camera")
+# UsdGeom.Xformable(camera).AddTranslateOp().Set((0., 10., 20.))
+# UsdGeom.Xformable(camera).AddRotateXYZOp().Set((-15., 0., 0.))
+
+# Create render products
+rp1 = rep.create.render_product(str(camera.GetPrimPath()), resolution=(640, 480))
+rgb_annotators = []
+for rp in [rp1]:
+    rgb = rep.AnnotatorRegistry.get_annotator("pointcloud")
+    rgb.attach([rp])
+    rgb_annotators.append(rgb)
+
 
 lcm_server = LCMBridgeServer(robot_name="b1")
 
@@ -99,6 +116,17 @@ while simulation_app.is_running():
         pc = lidar.get_current_frame()['point_cloud']
         # print(pc.shape)
         lidar_data_pipe.write(pc, match_length=True)
+        # rep.orchestrator.step()
+        # Get annotator data after each replicator process step
+        for j, rgb_annot in enumerate(rgb_annotators):
+            # print(rgb_annot.get_data().shape)
+            # breakpoint()
+            img = rgb_annot.get_data()
+            # breakpoint()
+            print(img['data'].shape)
+            # if img.shape[0] !=0:
+                # cv2.imshow(f"rgb{j}", rgb_annot.get_data())
+        cv2.waitKey(1)
     else:
         world.step(render=False)
 
