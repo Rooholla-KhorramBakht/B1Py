@@ -128,9 +128,9 @@ class CommandInterface:
         self.body_height_cmd = 0.0
         self.step_frequency_cmd = 2.5
         self.gait = torch.tensor(gaits["trotting"])
-        self.footswing_height_cmd = 0.08
+        self.footswing_height_cmd = 0.03
         self.pitch_cmd = 0.0
-        self.roll_cmd = 0.3
+        self.roll_cmd = 0.0
         self.stance_width_cmd = 0.0
 
     def get_command(self):

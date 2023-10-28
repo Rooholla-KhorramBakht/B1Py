@@ -9,7 +9,7 @@ from B1Py.controllers.RL.walk_these_ways.walk_these_ways import (
 )
 
 if __name__ == "__main__":
-    checkpoint_path = "../checkpoints/B1"
+    checkpoint_path = "checkpoints/B1"
 
     cfg = loadParameters(checkpoint_path)
     policy = Policy(checkpoint_path)
@@ -28,9 +28,6 @@ if __name__ == "__main__":
         else:
             isaacsim_agent.wait_for_state()
         yaw = pp.SO3(isaacsim_agent.state.quaternion).euler()[-1].item()
-        command_profile.yaw_vel_cmd = -yaw * 1.5
-        command_profile.x_vel_cmd = -i * 0.001 - 0.4 * isaacsim_agent.state.gt_pos[0]
+        command_profile.yaw_vel_cmd = 3.1415/2-yaw * 1.5
+        command_profile.x_vel_cmd = 0*-i * 0.001 - 0.4 * isaacsim_agent.state.gt_pos[0]
         command_profile.y_vel_cmd = -1.0 * isaacsim_agent.state.gt_pos[1]
-
-        # command_profile.footswing_height_cmd=0.2
-        # print()
