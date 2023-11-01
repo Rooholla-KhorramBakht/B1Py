@@ -1,3 +1,4 @@
+import time
 import threading
 
 import numpy as np
@@ -44,15 +45,13 @@ class RosVelodyneListener:
         Update the Lidar data. This function runs in a separate thread
         and continuously updates the Lidar data.
         """
-        rate = self.listener.create_rate(self.rate)
-
         while not self.stop_thread and rclpy.ok():
             try:
                 rclpy.spin_once(self.listener)
                 self.points = self.listener.points
             except:
                 print("Cannot access point cloud data.")
-            rate.sleep()
+            time.sleep(1 / self.rate)
 
     def stop(self):
         """
@@ -60,6 +59,8 @@ class RosVelodyneListener:
         """
         self.stop_thread = True
         self.thread.join()
+        self.listener.destroy_node()
+        rclpy.shutdown()
 
 
 class PointCloudListener(Node):
