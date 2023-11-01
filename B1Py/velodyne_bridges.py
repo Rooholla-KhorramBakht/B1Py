@@ -11,6 +11,10 @@ from sensor_msgs_py import point_cloud2
 
 class RosVelodyneListener:
     """
+    Before using this class run
+
+    ros2 launch velodyne velodyne-all-nodes-VLP16-launch.py
+
     Example Usage:
 
     rclpy.init(args=args)
