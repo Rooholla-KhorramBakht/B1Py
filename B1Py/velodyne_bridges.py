@@ -25,6 +25,12 @@ class RosVelodyneListener:
     """
 
     def __init__(self, rate=10):
+        """
+        Initialize the velodyne listener.
+
+        Parameters:
+            rate (int, optional): Rate of point cloud update. Defaults to 10 Hz.
+        """
         self.listener = PointCloudListener()
         self.rate = rate
         self.points = None
