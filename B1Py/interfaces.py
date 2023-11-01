@@ -9,7 +9,9 @@ from B1Py.pinocchio import PinRobot
 
 
 class B1HighLevelReal:
-    def __init__(self, loop_frequency=100, test=False):
+    def __init__(
+        self, loop_frequency=100, test=False, vx_max=0.5, vy_max=0.4, ωz_max=0.5
+    ):
         self.loop_frequency = loop_frequency
         HIGHLEVEL = 0xEE
         self.udp = sdk.UDP(HIGHLEVEL, 8080, "192.168.123.220", 8082)
@@ -34,11 +36,11 @@ class B1HighLevelReal:
         self.pin_robot = PinRobot()
 
         # for velocity clipping
-        self.vx_max = 0.5
-        self.vy_max = 0.4
+        self.vx_max = vx_max
+        self.vy_max = vy_max
         self.P_v_max = np.diag([1 / self.vx_max**2, 1 / self.vy_max**2])
-        self.omega_max = 0.5
-        self.omega_min = -0.5
+        self.ωz_max = ωz_max
+        self.ωz_min = -ωz_max
 
         if not test:
             self.running = True
@@ -86,17 +88,15 @@ class B1HighLevelReal:
 
         return batteryState.SOC
 
-    def setCommand(
-        self, v_x, v_y, omega_z, bodyHeight=0.0, footRaiseHeight=0.0, mode=2
-    ):
-        assert mode in [0, 2], "Only mode 2: walking and mode 0: idea is allowed"
+    def setCommand(self, v_x, v_y, ω_z, bodyHeight=0.0, footRaiseHeight=0.0, mode=2):
+        assert mode in [0, 2]  # Only mode 2: walking and mode 0: idea is allowed
         self.cmd_watchdog_timer = time.time()
         self.cmd.mode = mode
         self.cmd.bodyHeight = np.clip(bodyHeight, -0.15, 0.1)
         self.cmd.footRaiseHeight = np.clip(footRaiseHeight, -0.1, 0.1)
-        _v_x, _v_y = self.clip_velocity(v_x, v_y)
+        _v_x, _v_y, _ω_z = self.clip_velocity(v_x, v_y, ω_z)
         self.cmd.velocity = [_v_x, _v_y]
-        self.cmd.yawSpeed = omega_z
+        self.cmd.yawSpeed = _ω_z
 
     def close(self):
         self.running = False
@@ -108,7 +108,7 @@ class B1HighLevelReal:
 
         return in_collision
 
-    def clip_velocity(self, v_x, v_y):
+    def clip_velocity(self, v_x, v_y, ω_z):
         _v = np.array([[v_x], [v_y]])
         _scale = np.sqrt(_v.T @ self.P_v_max @ _v)[0, 0]
 
@@ -117,4 +117,4 @@ class B1HighLevelReal:
         else:
             scale = 1.0
 
-        return scale * v_x, scale * v_y
+        return scale * v_x, scale * v_y, np.clip(ω_z, self.ωz_min, self.ωz_max)

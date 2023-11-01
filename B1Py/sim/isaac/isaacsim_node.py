@@ -38,7 +38,9 @@ if assets_root_path is None:
 prim = get_prim_at_path("/World/Warehouse")
 if not prim.IsValid():
     prim = define_prim("/World/Warehouse", "Xform")
-    asset_path = assets_root_path + "/Isaac/Environments/Simple_Warehouse/full_warehouse.usd"
+    asset_path = (
+        assets_root_path + "/Isaac/Environments/Simple_Warehouse/full_warehouse.usd"
+    )
     prim.GetReferences().AddReference(asset_path)
 
 # spawn a B1 robot
