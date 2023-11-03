@@ -40,6 +40,7 @@ class RosVelodyneListener:
         self.listener = PointCloudListener()
         self.rate = rate
         self.points = None
+        self.distance_threshold = 3.0
 
         self.stop_thread = False
         self.thread = threading.Thread(target=self.update)
@@ -63,7 +64,13 @@ class RosVelodyneListener:
                 pcd_o3d.points = o3d.utility.Vector3dVector(self.listener.points)
                 voxel_down_pcd = pcd_o3d.voxel_down_sample(voxel_size=0.02)
                 pcd, _ = voxel_down_pcd.remove_statistical_outlier(20, 0.2)
-                self.points = np.asarray(pcd.points)
+
+                # remove points that are too far away
+                _points = np.asarray(pcd.points)
+                squared_distances = np.sum(_points**2, axis=1)
+                mask = squared_distances <= self.distance_threshold**2
+
+                self.points = _points[mask]
 
             except:
                 print("Cannot access point cloud data.")
