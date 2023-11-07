@@ -1,6 +1,7 @@
 import sys
 
 import numpy as np
+from dataclasses import dataclass
 
 
 def addROSPath(installation_path):
@@ -39,3 +40,34 @@ class NumpyMemMapDataPipe:
 
     def read(self):
         return self.shm.copy()
+
+
+@dataclass
+class xKeySwitch:
+    R1: int
+    L1: int
+    start: int
+    select: int
+    R2: int
+    L2: int
+    F1: int
+    F2: int
+    A: int
+    B: int
+    X: bool
+    Y: int
+    up: int
+    right: int
+    down: int
+    left: int
+
+
+@dataclass
+class xRockerBtn:
+    head: list
+    btn: xKeySwitch
+    lx: float
+    rx: float
+    ry: float
+    L2: float
+    ly: float
