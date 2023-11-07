@@ -1,19 +1,27 @@
 import time
 
 from B1Py.interfaces import B1HighLevelReal
+from B1Py.joysticks import Logitech3DPro
 
 
 def main():
     robot = B1HighLevelReal(vx_max=0.015, vy_max=0.015, ωz_max=0.01)
+    joy = Logitech3DPro(joy_id=0)
 
-    for i in range(100):
+    for i in range(10000):
         time.sleep(0.01)
 
-        v_x, v_y, ω = robot.getCommandFromRemote()
-        print(v_x, v_y, ω)
-        robot.setCommand(v_x, v_y, ω)
+        cmd = joy.readAnalog()
 
-        # robot.setCommand(0.02, 0.0, 0.0)
+        if i <= 200:
+            robot.setCommand(0.0, 0.0, 0.0, mode=2)
+        else:
+            robot.setCommand(
+                -cmd["y"] * robot.vx_max,
+                cmd["x"] * robot.vy_max,
+                cmd["z"] * robot.ωz_max,
+                mode=2,
+            )
 
         battery_percentage = robot.getBatteryState()
 

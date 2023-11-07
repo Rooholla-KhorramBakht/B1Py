@@ -110,6 +110,7 @@ class B1HighLevelReal:
         return rockerBtn
 
     def getCommandFromRemote(self):
+        """Do not use directly for control!!!"""
         rockerBtn = self.getRemoteState()
 
         lx = rockerBtn.lx
