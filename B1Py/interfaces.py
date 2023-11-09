@@ -1,3 +1,4 @@
+import struct
 import threading
 import time
 
@@ -6,6 +7,7 @@ import numpy.linalg as LA
 import robot_interface as sdk
 
 from B1Py.pinocchio import PinRobot
+from B1Py.utils import xKeySwitch, xRockerBtn
 
 
 class B1HighLevelReal:
@@ -81,6 +83,45 @@ class B1HighLevelReal:
         q, dq = np.array(_q), np.array(_dq)
 
         return q, dq
+
+    def getRemoteState(self):
+        """Returns the state of the remote control"""
+        wirelessRemote = self.state.wirelessRemote[:24]
+
+        binary_data = bytes(wirelessRemote)
+
+        format_str = "<2BH5f"
+        data = struct.unpack(format_str, binary_data)
+
+        head = list(data[:2])
+        lx = data[3]
+        rx = data[4]
+        ry = data[5]
+        L2 = data[6]
+        ly = data[7]
+
+        _btn = bin(data[2])[2:].zfill(16)
+        btn = [int(char) for char in _btn]
+        btn.reverse()
+
+        keySwitch = xKeySwitch(*btn)
+        rockerBtn = xRockerBtn(head, keySwitch, lx, rx, ry, L2, ly)
+
+        return rockerBtn
+
+    def getCommandFromRemote(self):
+        """Do not use directly for control!!!"""
+        rockerBtn = self.getRemoteState()
+
+        lx = rockerBtn.lx
+        ly = rockerBtn.ly
+        rx = rockerBtn.rx
+
+        v_x = ly * self.vx_max
+        v_y = lx * self.vy_max
+        ω = rx * self.ωz_max
+
+        return v_x, v_y, ω
 
     def getBatteryState(self):
         """Returns the battery percentage of the robot"""
