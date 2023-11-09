@@ -5,7 +5,7 @@ from B1Py.joysticks import Logitech3DPro
 
 
 def main():
-    robot = B1HighLevelReal(vx_max=0.015, vy_max=0.015, ωz_max=0.01)
+    robot = B1HighLevelReal(vx_max=0.3, vy_max=0.3, ωz_max=0.2)
     joy = Logitech3DPro(joy_id=0)
 
     for i in range(10000):
@@ -19,7 +19,7 @@ def main():
             robot.setCommand(
                 -cmd["y"] * robot.vx_max,
                 cmd["x"] * robot.vy_max,
-                cmd["z"] * robot.ωz_max,
+                -cmd["z"] * robot.ωz_max,
                 mode=2,
             )
 
