@@ -18,7 +18,7 @@ def main():
         else:
             robot.setCommand(
                 -cmd["y"] * robot.vx_max,
-                cmd["x"] * robot.vy_max,
+                -cmd["x"] * robot.vy_max,
                 -cmd["z"] * robot.ωz_max,
                 mode=2,
             )
