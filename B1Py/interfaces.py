@@ -1,3 +1,4 @@
+import struct
 import threading
 import time
 
@@ -7,7 +8,6 @@ import robot_interface as sdk
 
 from B1Py.pinocchio import PinRobot
 from B1Py.utils import xKeySwitch, xRockerBtn
-import struct
 
 
 class B1HighLevelReal:
