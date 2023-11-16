@@ -5,6 +5,10 @@ from B1Py.joysticks import Logitech3DPro
 
 
 def main():
+    """
+    This example shows how to control the robot using a joystick.
+    NOTE: If the robot does not stop just perturb the joystick a bit.
+    """
     robot = B1HighLevelReal(vx_max=0.3, vy_max=0.3, ωz_max=0.2)
     joy = Logitech3DPro(joy_id=0)
 
