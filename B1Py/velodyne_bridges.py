@@ -91,7 +91,7 @@ class PointCloudListener(Node):
     def __init__(self):
         super().__init__("point_cloud_listener")
         self.subscription = self.create_subscription(
-            PointCloud2, "/velodyne_points", self.listener_callback, 10
+            PointCloud2, "/rslidar_points", self.listener_callback, 10
         )
         self.data = None
 

@@ -1,0 +1,20 @@
+FROM ros:humble
+
+RUN apt update && apt upgrade -y
+# RUN apt install ros-humble-desktop -y
+RUN apt install ros-dev-tools -y
+# RUN sudo apt-get update && apt-get install -y xauth x11-apps
+
+RUN sudo apt install ros-humble-librealsense2* -y
+RUN mkdir -p /ros2_ws/src
+WORKDIR /ros2_ws/src/
+RUN git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-deve$
+WORKDIR /ros2_ws
+RUN apt-get install python3-rosdep -y
+RUN rm /etc/ros/rosdep/sources.list.d/20-default.list &&  rosdep init && rosde$
+WORKDIR /ros2_ws
+SHELL ["/bin/bash", "-c"]
+RUN . /opt/ros/humble/setup.bash && colcon build
+
+RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
+RUN echo ". /home/ros2_ws/install/local_setup.bash" >> /root/.bashrc
