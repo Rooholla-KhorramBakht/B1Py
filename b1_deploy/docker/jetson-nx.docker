@@ -14,6 +14,8 @@ RUN rosdep install -i --from-path src --rosdistro humble --skip-keys=librealsens
 RUN . /opt/ros/humble/setup.bash && colcon build
 
 RUN echo ". /ros2_ws/install/setup.bash" >> /root/.bashrc
+RUN echo "ros2 launch  realsense2_camera front_front_launch.py & sleep 10 & ros2 launch  realsense2_camera front_down_launch.py" > /start.sh
+RUN chmod +x /start.sh
 RUN rm /etc/ros/rosdep/sources.list.d/20-default.list
 RUN rm -r /B1Py
-CMD ["/bin/bash"]
+CMD ["/bin/bash /start.sh"]
