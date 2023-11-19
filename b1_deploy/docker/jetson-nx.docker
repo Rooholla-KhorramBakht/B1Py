@@ -3,7 +3,7 @@ SHELL ["/bin/bash", "-c"]
 
 RUN apt update && apt upgrade -y
 RUN sudo apt install ros-humble-librealsense2* python3-rosdep ros-dev-tools -y
-RUN rosdep init && rosdep update 
+#RUN rosdep init && rosdep update 
 
 RUN mkdir -p /ros2_ws/src
 WORKDIR /ros2_ws/src/
