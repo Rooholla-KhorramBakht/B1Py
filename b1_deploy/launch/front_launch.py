@@ -25,5 +25,5 @@ def generate_launch_description():
         TimerAction(
             period=5,
             actions=[launch2]
-        )]
+        )])
 
