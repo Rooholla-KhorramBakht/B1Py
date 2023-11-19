@@ -25,10 +25,5 @@ def generate_launch_description():
         TimerAction(
             period=5,
             actions=[launch2]
-        )
-    return LaunchDescription([
-        launch1,
-        launch2
-        # Add other nodes or launch actions if needed
-    ])
+        )]
 
