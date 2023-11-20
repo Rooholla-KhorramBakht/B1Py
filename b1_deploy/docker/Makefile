@@ -13,11 +13,11 @@ help:
 # 	@docker build --tag ros:vins-fusion -f ./Dockerfile ..
 
 jetson23:
-	@docker build --tag jetson23:latest . -f jetson23.docker
+	@docker build --tag jetson:23 . -f jetson23.docker
 
 jetson24:
-	@docker build --tag jetson24:latest . -f jetson24.docker
+	@docker build --tag jetson:24 . -f jetson24.docker
 
 clean:
-	@docker rmi -f jetson23:latest	
-	@docker rmi -f jetson24:latest
+	@docker rmi -f jetson:23	
+	@docker rmi -f jetson:24
