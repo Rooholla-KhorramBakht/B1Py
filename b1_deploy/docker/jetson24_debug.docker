@@ -17,5 +17,4 @@ RUN echo ". /ros2_ws/install/setup.bash" >> /root/.bashrc
 RUN rm /etc/ros/rosdep/sources.list.d/20-default.list
 RUN rm -r /B1Py
 
-ENTRYPOINT source /ros2_ws/install/setup.bash && ros2 launch  realsense2_camera side_left_launch.py & sleep 10 && \
-           source /ros2_ws/install/setup.bash && ros2 launch realsense2_camera side_right_launch.py
+ENTRYPOINT /bin/bash
