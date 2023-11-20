@@ -1,0 +1,23 @@
+FROM ros:humble
+SHELL ["/bin/bash", "-c"]
+
+RUN apt update && apt upgrade -y
+RUN sudo apt install ros-humble-librealsense2* python3-rosdep ros-dev-tools -y
+#RUN rosdep init && rosdep update 
+
+RUN mkdir -p /ros2_ws/src
+WORKDIR /ros2_ws/src/
+RUN git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-development
+RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cp /B1Py/b1_deploy/launch/* /ros2_ws/src/realsense-ros/realsense2_camera/launch
+WORKDIR /ros2_ws
+RUN rosdep install -i --from-path src --rosdistro humble --skip-keys=librealsense2 -y
+RUN . /opt/ros/humble/setup.bash && colcon build
+
+RUN echo ". /ros2_ws/install/setup.bash" >> /root/.bashrc
+RUN rm /etc/ros/rosdep/sources.list.d/20-default.list
+RUN rm -r /B1Py
+
+#ENTRYPOINT source /ros2_ws/install/setup.bash && ros2 launch  realsense2_camera side_left_launch.py & sleep 10 && \
+#           source /ros2_ws/install/setup.bash && ros2 launch realsense2_camera side_right_launch.py
+
+ENTRYPOINT /bin/bash
