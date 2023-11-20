@@ -16,7 +16,7 @@ jetson23:
 	@docker build --tag jetson23:latest . -f jetson23.docker
 
 jetson24:
-	@docker build --tag jetson23:latest . -f jetson24.docker
+	@docker build --tag jetson24:latest . -f jetson24.docker
 
 clean:
 	@docker rmi -f jetson23:latest	
