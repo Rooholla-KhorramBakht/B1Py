@@ -12,8 +12,8 @@ help:
 # build:
 # 	@docker build --tag ros:vins-fusion -f ./Dockerfile ..
 
-jetson-nx:
-	@docker build --tag jetson-nx:latest . -f jetson-nx.docker
+jetson23:
+	@docker build --tag jetson23:latest . -f jetson23.docker
 
 clean:
-	@docker rmi -f jetson-nx:latest
+	@docker rmi -f jetson23:latest
