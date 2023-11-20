@@ -18,10 +18,14 @@ jetson23:
 jetson24:
 	@docker build --tag jetson:24 --no-cache . -f jetson24.docker
 
+jetson25:
+	@docker build --tag jetson:25 --no-cache . -f jetson25.docker
+
 jetson_debug:
 	@docker build --tag jetson:debug --no-cache . -f jetson_debug.docker
 
 clean:
 	@docker rmi -f jetson:23	
 	@docker rmi -f jetson:24	
+	@docker rmi -f jetson:25	
 	@docker rmi -f jetson:debug

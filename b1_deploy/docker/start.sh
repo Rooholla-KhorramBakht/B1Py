@@ -1,0 +1,1 @@
+sudo docker run -it --network host --privileged -it ${1}
