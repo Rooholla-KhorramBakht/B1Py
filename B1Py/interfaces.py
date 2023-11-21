@@ -67,6 +67,25 @@ class B1HighLevelReal:
             if not self.ready and LA.norm(self.getIMU()[0]) > 5:
                 self.ready = True
 
+    def retrieve_state(self):
+        """
+        Retrieve the state of the robot (only use in test mode)
+        """
+        self.udp.Recv()
+        self.udp.GetRecv(self.state)
+
+    def send_command(self):
+        """
+        Send command to robot (only use in test mode & after setting command)
+        """
+        if time.time() - self.cmd_watchdog_timer > 0.2:
+            self.cmd.mode = 0
+            self.cmd.euler = [0, 0, 0]
+            self.cmd.velocity = [0, 0]
+            self.cmd.yawSpeed = 0.0
+        self.udp.SetSend(self.cmd)
+        self.udp.Send()
+
     def getIMU(self):
         accel = self.state.imu.accelerometer
         gyro = self.state.imu.gyroscope
