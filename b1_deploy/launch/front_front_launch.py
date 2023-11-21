@@ -21,8 +21,8 @@ from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 
 
-configurable_parameters = [{'name': 'camera_name',                  'default': 'forward', 'description': 'camera unique name'},
-                           {'name': 'camera_namespace',             'default': 'front_cam', 'description': 'namespace for camera'},
+configurable_parameters = [{'name': 'camera_name',                  'default': 'front_cam', 'description': 'camera unique name'},
+                           {'name': 'camera_namespace',             'default': 'B1', 'description': 'namespace for camera'},
                            {'name': 'serial_no',                    'default': "'141122079634'" , 'description': 'choose device by serial number'},
                            {'name': 'usb_port_id',                  'default': "''", 'description': 'choose device by usb port id'},
                            {'name': 'device_type',                  'default': "''", 'description': 'choose device by type'},
