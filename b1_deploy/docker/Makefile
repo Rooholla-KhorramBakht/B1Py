@@ -25,7 +25,7 @@ jetson_debug:
 	@docker build --tag jetson:debug --no-cache . -f jetson_debug.docker
 
 docker23_install:
-	@cp ../autostart/docker-hw-bridge-23.service /etc/systemd/system/
+	@cp autostart/docker-hw-bridge-23.service /etc/systemd/system/
 	@systemctl enable docker-hw-bridge-23.service
 	@systemctl start docker-hw-bridge-23.service
 
@@ -36,7 +36,7 @@ docker23_uninstall:
 	@rm /etc/systemd/system/docker-hw-bridge-23.service
 
 docker24_install:
-	@cp ../autostart/docker-hw-bridge-24.service /etc/systemd/system/
+	@cp autostart/docker-hw-bridge-24.service /etc/systemd/system/
 	@systemctl enable docker-hw-bridge-24.service
 	@systemctl start docker-hw-bridge-24.service
 
@@ -47,7 +47,7 @@ docker24_uninstall:
 	@rm /etc/systemd/system/docker-hw-bridge-24.service
 
 docker25_install:
-	@cp ../autostart/docker-hw-bridge-25.service /etc/systemd/system/
+	@cp autostart/docker-hw-bridge-25.service /etc/systemd/system/
 	@systemctl enable docker-hw-bridge-25.service
 	@systemctl start docker-hw-bridge-25.service
 
