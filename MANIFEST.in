@@ -1,2 +1,5 @@
-include B1Py/unitree_legged_sdk/*
-include B1Py/B1Py/assets/*
+include B1Py/unitree_legged_sdk/* 
+include B1Py/assets/*/*.usd
+include B1Py/assets/*/*.urdf
+include B1Py/assets/*/*.dae
+include B1Py/assets/*/*.png
