@@ -16,7 +16,7 @@ def main():
 
         time.sleep(0.01)
 
-    lidar.stop()
+    lidar.close()
 
 
 if __name__ == "__main__":

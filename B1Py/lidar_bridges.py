@@ -56,7 +56,7 @@ class ROSPointCloudListener:
 
         return _points[mask]
 
-    def stop(self):
+    def close(self):
         """
         Stops the thread that is updating the Lidar data.
         """
