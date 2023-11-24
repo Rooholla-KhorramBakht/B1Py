@@ -17,6 +17,7 @@ class ROSPointCloudListener:
         Parameters:
             rate (int, optional): Rate of point cloud update. Defaults to 10 Hz.
         """
+        rclpy.init()
         self.listener = PointCloudListener(topic)
         self.distance_threshold = 3.0
 
@@ -35,9 +36,9 @@ class ROSPointCloudListener:
 
     def update(self):
         rclpy.spin(self.listener)
-    
+
     def process_points(self):
-        self.new_frame_flag = False
+        self.listener.new_frame_flag = False
 
         # downsample and remove outliers
         pcd_o3d = o3d.geometry.PointCloud()
@@ -55,15 +56,14 @@ class ROSPointCloudListener:
 
         return _points[mask]
 
-
     def stop(self):
         """
         Stops the thread that is updating the Lidar data.
         """
         self.stop_thread = True
-        self.thread.join()
         self.listener.destroy_node()
         rclpy.shutdown()
+        self.thread.join()
 
 
 class PointCloudListener(Node):
@@ -73,6 +73,8 @@ class PointCloudListener(Node):
             PointCloud2, topic, self.listener_callback, 10
         )
         self.data = None
+        self.new_frame_flag = False
+        self.points = None
 
     def listener_callback(self, msg):
         # Read the x, y, z fields from the PointCloud2 message
@@ -80,3 +82,4 @@ class PointCloudListener(Node):
 
         # Convert the generator to a list, then to a numpy array
         self.points = np.array(list(gen))
+        self.new_frame_flag = True
