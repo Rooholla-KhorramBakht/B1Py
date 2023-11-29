@@ -16,39 +16,31 @@ cd B1Py
 
 ## Getting Started
 The following point to the documentations and Jupyter notebook examples for various use cases and procedures:
-### Setup and Calibration
-- [Getting Started with the Robot]()
-- [Network Setup and Internet Sharing]()
-- [NTP Time Synchronization Between the Onboard Computers]()
-- [Vicon Communication Through ROS](notebooks/vicon_through_ros.ipynb)
-- [Intel Realsense Through ROS]()
-- [Intel Realsense Through Python (librealsense2)]()
-- [Python Interface with the Unitree's Controller (High-Level)](notebooks/unitree_locomotion_controller_interface.ipynb)
-- [Python Interface with the Robot's Joint Controllers (Low-Level)]()
-- [Camera Intrinsic Calibration (Kalibr)]()
-- [Camera-IMU Calibration (Kalibr)]()
-- [Camera Extrinsic Calibration (Vicon)]()
-- [IMU-Vicon Calibration and Ground-Truth Generation]()
-- [Calibration Results Aggregation and `B1Params` Class]()
-- [Simulation using Pybullet]()
-- [Simulation using NVIDIA Isaac Sim](docs/ISAACSIM.md)
+### Setup
+- [Operation Basics]()
+- [System Setup](docs/setup/index.md)
+- [Vicon Setup](docs/setup/vicon.md)
+- [Python Interface](notebooks/unitree_locomotion_controller_interface.ipynb)
+
+### Calibration
+- [Intrinsic Calibration]()
+- [Extrinsic Calibration]()
+- [Robot Description and `B1Params` Class]()
+
+### Simulation
+- [NVIDIA Isaac Sim](docs/ISAACSIM.md)
+- [Pybullet]()
+- [MuJCO]()
+
+### State Estimation
+- [Contact Estimation]()
+- [Odometry]()
+- [Occupancy Map]()
+- [Elevation Map]()
+- [Hierarchical Scene Graph]()
 
 ### Control
-- [Joystick with the Unitree High-Level Controller](notebooks/unitree_highlevel_joystick_control.ipynb)
-- [Position Control with Unitree's Locomotion Controller and Vicon](notebooks/unitree_highlevel_position_control_vicon.ipynb)
-- [Position Control with Unitree's Locomotion Controller and VIO/LiDAR]()
-- [Unitree Locomotion Controller and CBFQP Obstacle Avoidance]()
-
-#### Learning Based
-- [Training an ActuatorNet for the Robot]()
-- [Walk These Ways: Tuning Robot Control for Generalization with Multiplicity of Behavior]()
-#### Linear MPC
-ToDo
-#### Nonlinear MPC
-ToDo
-### State Estimation
-- [Ground Reaction Force Estimation]()
-- [Contact Detection]()
-- [Loosely Coupled Kinematics Inertial Fusion (EKF)]()
-- [Loosely Coupled Kinematics Inertial Fusion (Factor-Graph)]()
-
+- [Unitree Builtin Controller](notebooks/unitree_highlevel_joystick_control.ipynb)
+- [Walk These Ways RL Controller]()
+- [Linear QP Controller]()
+- [SQP NL-MPC]()
