@@ -159,3 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 drafts
+deploy/ros2_ws/log
+deploy/ros2_ws/install
+deploy/ros2_ws/build
