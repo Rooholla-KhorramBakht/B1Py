@@ -39,13 +39,13 @@ class B1HighLevelReal(Node):
         self.cmd_publisher = self.create_publisher(HighCmd, self.cmd_topic_name, 1)
         self.cmd = HighCmd()
         self.cmd.mode = 0  # 0:idle, default stand 1:forced stand 2:walk continuously
-        self.cmd.gaitType = 0
-        self.cmd.speedLevel = 0
-        self.cmd.footRaiseHeight = 0
-        self.cmd.bodyHeight = 0
-        self.cmd.euler = [0, 0, 0]
-        self.cmd.velocity = [0, 0]
-        self.cmd.yawSpeed = 0.0
+        self.cmd.gait_type = 0
+        self.cmd.speed_level = 0
+        self.cmd.foot_raise_height = 0.
+        self.cmd.body_height = 0.
+        self.cmd.euler = [0., 0., 0.]
+        self.cmd.velocity = [0., 0.]
+        self.cmd.yaw_speed = 0.0
         self.cmd.reserve = 0
         self.ready = False
 
@@ -73,7 +73,7 @@ class B1HighLevelReal(Node):
         """
         Retrieve the state of the robot
         """
-        self.state = msg.copy()
+        self.state = msg
 
     def getIMU(self):
         accel = self.state.imu.accelerometer
