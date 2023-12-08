@@ -19,6 +19,7 @@ class UnitreeB1(Articulation):
         physics_dt: Optional[float] = 1 / 400.0,
         position: Optional[np.ndarray] = None,
         orientation: Optional[np.ndarray] = None,
+        usd_path: Optional[str] = None,
     ) -> None:
         """
         [Summary]
@@ -34,7 +35,12 @@ class UnitreeB1(Articulation):
         """
         self._prim_path = prim_path
         prim = define_prim(self._prim_path, "Xform")
-        prim.GetReferences().AddReference(B1Py.USD_PATH)
+        prim.GetReferences().AddReference(B1Py.B1_USD_PATH)
+        self.usd_path = usd_path
+        if self.usd_path is None:
+            prim.GetReferences().AddReference(B1Py.B1_USD_PATH)
+        else:
+            prim.GetReferences().AddReference(self.usd_path)
 
         super().__init__(
             prim_path=self._prim_path,
