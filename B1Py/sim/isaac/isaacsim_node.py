@@ -42,15 +42,6 @@ assets_root_path = get_assets_root_path()
 if assets_root_path is None:
     print("Could not find Isaac Sim assets folder")
 
-# # spawn warehouse scene
-# prim = get_prim_at_path("/World/Warehouse")
-# if not prim.IsValid():
-#     prim = define_prim("/World/Warehouse", "Xform")
-#     asset_path = (
-#         assets_root_path + "/Isaac/Environments/Simple_Warehouse/full_warehouse.usd"
-#     )
-#     prim.GetReferences().AddReference(asset_path)
-
 prim = get_prim_at_path(env_cfg["prim_path"])
 if not prim.IsValid():
     prim = define_prim(env_cfg["prim_path"], "Xform")

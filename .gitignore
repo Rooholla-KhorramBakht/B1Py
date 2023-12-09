@@ -164,3 +164,4 @@ deploy/ros2_ws/install
 deploy/ros2_ws/build
 
 B1Py/history
+examples/history
