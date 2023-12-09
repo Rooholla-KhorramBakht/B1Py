@@ -12,7 +12,9 @@ B1Py is a collection of tools and tutorials for getting started with the Unitree
 
 ## How to Use
 ### Simulation
-We provide a simple simulation environment based on the Isaac Sim. This simulation environment follows the exact interfacing API (low-level joint control) as the one used for communicating with the real robot. To use the simulator, create a link to the builtin Python interpreter provided by Isaac Sim:
+We provide a simple simulation environment based on the Isaac Sim. This simulation environment follows the exact interfacing API (low-level joint control) as the one used for communicating with the real robot, and is designed to simulate the experience of using the real-robot as closely as possible.
+
+ To use the simulator, first install the Isaac Sim as described [here](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html) and create a link to the builtin Python interpreter provided by the simulator:
 
 ```bash
 cd B1Py
