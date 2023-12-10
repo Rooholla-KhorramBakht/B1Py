@@ -17,6 +17,7 @@ class AnnotatorManager:
             "pointcloud",
             "semantic_segmentation",
         ]
+        self.camera_prims = {}
         self.camera_info = {}
         self.world = world
 
@@ -37,6 +38,7 @@ class AnnotatorManager:
                                 translation=tuple(translation),
                                 orientation=(qw, qx, qy, qz) # Omniverse core convention (w, x, y, z)
                                 )
+        self.camera_prims[name] = xformprim
         self.cameras[name] = self.world.stage.DefinePrim(
             xformprim.prim_path + "/" + name, "Camera"
         )
@@ -95,3 +97,22 @@ class AnnotatorManager:
 
     def getCameraExtrinsics(self, name):
         return None
+    
+    def getCameraPose(self, name):
+        """
+        Get the camera pose in the world frame
+        @param name: (str) The name of the camera
+        @return: (t, q) The camera pose (np.array([x, y, z]), np.array([qw, qx, qy, qz])) 
+        """
+        t, q = self.camera_prims[name].get_world_pose()
+        return t, q
+
+    def setCameraPose(self, name, t, q):
+        """
+        Get the camera pose in the world frame
+        @param name: (str) The name of the camera
+        @param t: (mp.array([x, y, z])) The translation of the camera in the world frame
+        @param q: (mp.array([qw, qx, qy, qz])) The orientation of the camera in the world frame
+        @return: None
+        """
+        self.camera_prims[name].set_local_pose(t, q)
