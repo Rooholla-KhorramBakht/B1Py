@@ -29,7 +29,7 @@ class JointStatePublisher(Node):
         Args:
             joint_names (list): list of joint names
             node_name (str): name of the node
-            topic_name (str): name of the topic to publish joint states
+            topic_name (str): name of the topic to publish joint statesco
             queue_size (int): size of the message queue
             timer_period (float): period of callback execution
         """
@@ -52,7 +52,7 @@ class JointStatePublisher(Node):
         joint_state.effort = self.tau
         self.publisher_.publish(joint_state)
 
-    def set_joint_state(self, q, dq, tau):
+    def set_joint_state(self, q, dq=None, tau=None):
         """
         Set the joint state of the publisher.
 
@@ -62,5 +62,13 @@ class JointStatePublisher(Node):
             tau (list): joint torques
         """
         self.q = q
-        self.dq = dq
-        self.tau = tau
+
+        if dq is None:
+            self.dq = [0.0] * self.n_joints
+        else:
+            self.dq = dq
+        
+        if tau is None:
+            self.tau = [0.0] * self.n_joints
+        else:
+            self.tau = tau
