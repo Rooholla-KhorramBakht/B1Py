@@ -4,18 +4,18 @@ import time
 
 import numpy as np
 import numpy.linalg as LA
+import rclpy
+from rclpy.node import Node
+from rclpy.qos import QoSProfile
+from unitree_msgs.msg import HighCmd, HighState
 
 from B1Py.pinocchio import PinRobot
 from B1Py.utils import xKeySwitch, xRockerBtn
-import rclpy
-from rclpy.node import Node
-from unitree_msgs.msg import HighState, HighCmd
-from rclpy.qos import QoSProfile
-import threading
-import time
+
 
 def ros2_init(args=None):
     rclpy.init(args=args)
+
 
 def ros2_close():
     rclpy.shutdown()
@@ -23,28 +23,31 @@ def ros2_close():
 
 class B1HighLevelReal(Node):
     def __init__(
-        self, test=False, vx_max=0.5, vy_max=0.4, ωz_max=0.5,
-        node_name= 'b1py_highlevel_subscriber', 
-        cmd_topic_name= 'B1/high_cmd',
-        state_topic_name= 'B1/high_state'):  
+        self,
+        test=False,
+        vx_max=0.5,
+        vy_max=0.4,
+        ωz_max=0.5,
+        node_name="b1py_highlevel_subscriber",
+        cmd_topic_name="B1/high_cmd",
+        state_topic_name="B1/high_state",
+    ):
         self.node_name = node_name
         self.cmd_topic_name = cmd_topic_name
         self.state_topic_name = state_topic_name
         super().__init__(self.node_name)
         self.subscription = self.create_subscription(
-            HighState,
-            self.state_topic_name,
-            self.new_state_callback,
-            1)
+            HighState, self.state_topic_name, self.new_state_callback, 1
+        )
         self.cmd_publisher = self.create_publisher(HighCmd, self.cmd_topic_name, 1)
         self.cmd = HighCmd()
         self.cmd.mode = 0  # 0:idle, default stand 1:forced stand 2:walk continuously
         self.cmd.gait_type = 0
         self.cmd.speed_level = 0
-        self.cmd.foot_raise_height = 0.
-        self.cmd.body_height = 0.
-        self.cmd.euler = [0., 0., 0.]
-        self.cmd.velocity = [0., 0.]
+        self.cmd.foot_raise_height = 0.0
+        self.cmd.body_height = 0.0
+        self.cmd.euler = [0.0, 0.0, 0.0]
+        self.cmd.velocity = [0.0, 0.0]
         self.cmd.yaw_speed = 0.0
         self.cmd.reserve = 0
         self.ready = False
@@ -65,7 +68,7 @@ class B1HighLevelReal(Node):
         self.thread.start()
 
     def run(self):
-        print(f'{self.node_name} ROS2 interface is running...')
+        print(f"{self.node_name} ROS2 interface is running...")
         while self.running:
             rclpy.spin_once(self, timeout_sec=0.2)
 
@@ -81,7 +84,7 @@ class B1HighLevelReal(Node):
         quat = self.state.imu.quaternion
         rpy = self.state.imu.rpy
         return accel, gyro, quat, rpy
-    
+
     def getFootContacts(self):
         """Returns the foot contact states"""
         footContacts = self.state.foot_force_est
@@ -151,7 +154,7 @@ class B1HighLevelReal(Node):
         self.cmd.velocity = [_v_x, _v_y]
         self.cmd.yaw_speed = _ω_z
         # Publish the command as a ROS2 message
-        self.cmd_publisher.publish(self.cmd)    
+        self.cmd_publisher.publish(self.cmd)
 
     def close(self):
         self.running = False

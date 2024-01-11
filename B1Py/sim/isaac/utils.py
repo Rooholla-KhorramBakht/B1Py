@@ -1,10 +1,10 @@
+import numpy as np
 import omni.replicator.core as rep
 from omni.isaac.core.prims import BaseSensor
-
-from pxr import UsdGeom
 from omni.isaac.core.prims.xform_prim import XFormPrim
+from pxr import UsdGeom
 from scipy.spatial.transform import Rotation as R
-import numpy as np
+
 
 class AnnotatorManager:
     def __init__(self, world):
@@ -33,18 +33,19 @@ class AnnotatorManager:
         resolution: The resolution of the camera in the form of (width, height).
         """
         qx, qy, qz, qw = tuple(orientation)
-        xformprim = XFormPrim( prim_path=parent_prim + "/" + name,
-                                name=name,
-                                translation=tuple(translation),
-                                orientation=(qw, qx, qy, qz) # Omniverse core convention (w, x, y, z)
-                                )
+        xformprim = XFormPrim(
+            prim_path=parent_prim + "/" + name,
+            name=name,
+            translation=tuple(translation),
+            orientation=(qw, qx, qy, qz),  # Omniverse core convention (w, x, y, z)
+        )
         self.camera_prims[name] = xformprim
         self.cameras[name] = self.world.stage.DefinePrim(
             xformprim.prim_path + "/" + name, "Camera"
         )
-        UsdGeom.Xformable(self.cameras[name]).AddTranslateOp().Set((0.,0.,0.))
-        #Rotate around x for 180 degrees to make the convention consistent with opencv/ROS
-        UsdGeom.Xformable(self.cameras[name]).AddRotateXYZOp().Set((180.,0.,0.)) 
+        UsdGeom.Xformable(self.cameras[name]).AddTranslateOp().Set((0.0, 0.0, 0.0))
+        # Rotate around x for 180 degrees to make the convention consistent with opencv/ROS
+        UsdGeom.Xformable(self.cameras[name]).AddRotateXYZOp().Set((180.0, 0.0, 0.0))
         self.camera_info[name] = {
             "translation": translation,
             "orientation": orientation,
@@ -90,19 +91,19 @@ class AnnotatorManager:
             name in self.cameras.keys()
         ), "The requested camera is not registered. Please register the camera first."
         self.cameras[name].GetAttribute("clippingRange").Set((min, max))
-    
+
     # TODO: implement these functions
     def getCameraIntrinsics(self, name):
         return None
 
     def getCameraExtrinsics(self, name):
         return None
-    
+
     def getCameraPose(self, name):
         """
         Get the camera pose in the world frame
         @param name: (str) The name of the camera
-        @return: (t, q) The camera pose (np.array([x, y, z]), np.array([qw, qx, qy, qz])) 
+        @return: (t, q) The camera pose (np.array([x, y, z]), np.array([qw, qx, qy, qz]))
         """
         t, q = self.camera_prims[name].get_world_pose()
         return t, q
