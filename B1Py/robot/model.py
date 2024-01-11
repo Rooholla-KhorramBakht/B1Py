@@ -1,7 +1,10 @@
 import numpy as np
 import pinocchio as pin
+
 import B1Py
+
 import hppfcl  # isort: skip
+
 
 class PinRobot:
     def __init__(self):

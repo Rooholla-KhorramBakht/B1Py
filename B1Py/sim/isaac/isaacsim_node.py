@@ -1,12 +1,13 @@
 # launch Isaac Sim before any other imports
 # default first two lines in any standalone application
+import pickle
 import sys
 import time
-import pickle
-# sys.path.append("/home/vr-station/projects/lcm/build/python")
 
 import numpy as np
 from omni.isaac.kit import SimulationApp
+
+# sys.path.append("/home/vr-station/projects/lcm/build/python")
 
 
 simulation_app = SimulationApp({"headless": False})  # we can also run as headless.
@@ -17,14 +18,18 @@ from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 from omni.isaac.sensor import RotatingLidarPhysX
 
+import B1Py
+from B1Py.lcm_types.unitree_lowlevel import UnitreeLowCommand
 from B1Py.sim.isaac.b1 import UnitreeB1
 from B1Py.sim.isaac.utils import AnnotatorManager
-from B1Py.sim.utils import LCMBridgeServer, simulationManager, NumpyMemMapDataPipe, load_config
-from B1Py.lcm_types.unitree_lowlevel import UnitreeLowCommand
-import B1Py
-cfg = load_config(
-    B1Py.B1_ISAACSIM_CFG_PATH
+from B1Py.sim.utils import (
+    LCMBridgeServer,
+    NumpyMemMapDataPipe,
+    load_config,
+    simulationManager,
 )
+
+cfg = load_config(B1Py.B1_ISAACSIM_CFG_PATH)
 robots = cfg["robots"]
 cameras = cfg["cameras"]
 env_cfg = cfg["environment"]
@@ -55,7 +60,7 @@ if not prim.IsValid():
 b1 = world.scene.add(
     UnitreeB1(
         prim_path=robots[0]["prim_path"],
-        usd_path=(robots[0]["usd_path"] if robots[0]["usd_path"] !='' else None),
+        usd_path=(robots[0]["usd_path"] if robots[0]["usd_path"] != "" else None),
         name=robots[0]["name"],
         position=np.array(robots[0]["position"]),
         physics_dt=cfg["environment"]["simulation_dt"],
@@ -95,15 +100,15 @@ for camera in cameras:
     ann.registerCamera(
         camera["prim_path"],
         camera["name"],
-        translation=camera['translation'],  # xyz
-        orientation=camera['orientation'], # xyzw
+        translation=camera["translation"],  # xyz
+        orientation=camera["orientation"],  # xyzw
         resolution=camera["resolution"],
     )
     for type in camera["type"]:
         ann.registerAnnotator(type, camera["name"])
 
     ann.setClippingRange(camera["name"], 0.2, 1000000.0)
-    ann.setFocalLength(camera["name"], 28)   
+    ann.setFocalLength(camera["name"], 28)
 
 # Add the shared memory data channels for image and LiDAR data
 print("Creating shared memory data pipes")

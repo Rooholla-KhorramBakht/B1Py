@@ -6,7 +6,9 @@ architecture = platform.architecture()[0]
 machine = platform.machine()
 B1_USD_PATH = os.path.join(os.path.dirname(__file__), "assets/usd/b1.usd")
 URDF_DIR_PATH = os.path.join(os.path.dirname(__file__), "assets/urdf")
-B1_ISAACSIM_CFG_PATH = os.path.join(os.path.dirname(__file__), "sim/isaac/sim_config.yaml")
+B1_ISAACSIM_CFG_PATH = os.path.join(
+    os.path.dirname(__file__), "sim/isaac/sim_config.yaml"
+)
 
 if architecture == "64bit":
     if "x86_64" in machine:

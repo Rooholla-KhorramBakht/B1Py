@@ -1,34 +1,37 @@
-from B1Py.lcm_types.unitree_lowlevel import UnitreeLowCommand, UnitreeLowState
-from B1Py.sim.utils import LCMBridgeClient
-from B1Py.sim.utils import NumpyMemMapDataPipe
-import numpy as np
-from B1Py.sim.utils import load_config
-from B1Py import B1_ISAACSIM_CFG_PATH
 import time
+
+import numpy as np
+
+from B1Py import B1_ISAACSIM_CFG_PATH
+from B1Py.lcm_types.unitree_lowlevel import UnitreeLowCommand, UnitreeLowState
+from B1Py.sim.utils import LCMBridgeClient, NumpyMemMapDataPipe, load_config
+
 
 class B1IsaacSim:
     """
     Class for communication with the simulated Franka Emika FR3 robot in Isaac Sim.
-    It uses LCM to send joint velocity to the simulated robot and receive joint states 
+    It uses LCM to send joint velocity to the simulated robot and receive joint states
     (joint angle, velocity, and torque) and camera images from the robot.
     """
-    def __init__(self, robot_id= "b1"):
-        '''
+
+    def __init__(self, robot_id="b1"):
+        """
         @param robot_id: (str) The name of the robot in the Isaac Sim scene.
-        '''
+        """
         self.lcm_bridge = LCMBridgeClient(robot_name=robot_id)
         self.cfg = load_config(B1_ISAACSIM_CFG_PATH)
         self.camera_pipes = {}
-        for camera in self.cfg['cameras']:
-            for type in camera['type']:
-                if type == 'rgb':
-                    shape = (camera['resolution'][1], camera['resolution'][0], 4)
+        for camera in self.cfg["cameras"]:
+            for type in camera["type"]:
+                if type == "rgb":
+                    shape = (camera["resolution"][1], camera["resolution"][0], 4)
                 else:
-                    shape = (camera['resolution'][1], camera['resolution'][0])
-            
-                self.camera_pipes[camera['name']+'_'+type] = \
-            NumpyMemMapDataPipe(camera['name']+'_'+type, force = False, shape= shape)
-            print(camera['name']+'_'+type)
+                    shape = (camera["resolution"][1], camera["resolution"][0])
+
+                self.camera_pipes[camera["name"] + "_" + type] = NumpyMemMapDataPipe(
+                    camera["name"] + "_" + type, force=False, shape=shape
+                )
+            print(camera["name"] + "_" + type)
 
     def LCMThreadFunc(self):
         """
@@ -65,39 +68,41 @@ class B1IsaacSim:
             gt_quat = np.array(state.gt_quat)
             gt_lin_vel = np.array(state.gt_lin_vel)
             gt_ang_vel = np.array(state.gt_ang_vel)
-            return {'q': q,
-                    'dq': dq,
-                    'tau_est': tau_est,
-                    'contact_state': contact_state,
-                    'accel': accel,
-                    'gyro': gyro,
-                    'temperature': temperature,
-                    'quaternion': quaternion,
-                    'rpy': rpy,
-                    'gravity': gravity,
-                    'gt_pos': gt_pos,
-                    'gt_quat': gt_quat,
-                    'gt_lin_vel': gt_lin_vel,
-                    'gt_ang_vel': gt_ang_vel}
-        
+            return {
+                "q": q,
+                "dq": dq,
+                "tau_est": tau_est,
+                "contact_state": contact_state,
+                "accel": accel,
+                "gyro": gyro,
+                "temperature": temperature,
+                "quaternion": quaternion,
+                "rpy": rpy,
+                "gravity": gravity,
+                "gt_pos": gt_pos,
+                "gt_quat": gt_quat,
+                "gt_lin_vel": gt_lin_vel,
+                "gt_ang_vel": gt_ang_vel,
+            }
+
         else:
             return None
-    
+
     def readCameras(self):
-        data =  {key:pipe.read() for key,pipe in self.camera_pipes.items()}
+        data = {key: pipe.read() for key, pipe in self.camera_pipes.items()}
         return data
 
     def sendCommands(self, kp, kd, q_des, dq_des, tau_ff):
         """
-        Send a joint velocity command to the robot. 
+        Send a joint velocity command to the robot.
         @param kp: (numpy.ndarray, shape=(n,)) The proportional gain for the joint position control.
         @param kd: (numpy.ndarray, shape=(n,)) The derivative gain for the joint position control.
         @param q_des: (numpy.ndarray, shape=(n,)) The desired joint position.
         @param dq_des: (numpy.ndarray, shape=(n,)) The desired joint velocity.
         @param tau_ff: (numpy.ndarray, shape=(n,)) The feedforward torque.
         """
-        cmd_lcm  = UnitreeLowCommand()
-        cmd_lcm.tau_ff =  tau_ff.tolist()
+        cmd_lcm = UnitreeLowCommand()
+        cmd_lcm.tau_ff = tau_ff.tolist()
         cmd_lcm.kp = kp.tolist()
         cmd_lcm.kd = kd.tolist()
         cmd_lcm.q_des = q_des.tolist()
@@ -116,4 +121,4 @@ class B1IsaacSim:
         for i in range(100):
             time.sleep(0.01)
             self.sendCommands(np.zeros(9))
-            state=self.getStates()
+            state = self.getStates()
