@@ -52,9 +52,9 @@ class JointStatePublisher(Node):
         joint_state.effort = self.tau
         self.publisher_.publish(joint_state)
 
-    def set_joint_state(self, q, dq=None, tau=None):
+    def set_joint_states(self, q, dq=None, tau=None):
         """
-        Set the joint state of the publisher.
+        Set the joint states of the publisher.
 
         Args:
             q (list): joint angles

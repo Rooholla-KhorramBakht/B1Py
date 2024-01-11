@@ -6,8 +6,8 @@ import numpy as np
 import numpy.linalg as LA
 import robot_interface as sdk
 
-from B1Py.pinocchio import PinRobot
-from B1Py.utils import xKeySwitch, xRockerBtn
+from B1Py.robot.model import PinRobot
+# from B1Py.utils import xKeySwitch, xRockerBtn
 
 
 class B1HighLevelReal:

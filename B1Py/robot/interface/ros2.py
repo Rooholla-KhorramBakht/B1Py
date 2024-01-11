@@ -9,8 +9,8 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile
 from unitree_msgs.msg import HighCmd, HighState
 
-from B1Py.pinocchio import PinRobot
-from B1Py.utils import xKeySwitch, xRockerBtn
+from B1Py.robot.model import PinRobot
+# from B1Py.utils import xKeySwitch, xRockerBtn
 
 
 def ros2_init(args=None):
