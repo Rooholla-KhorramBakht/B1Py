@@ -166,3 +166,4 @@ deploy/ros2_ws/build
 B1Py/history
 examples/history
 _isaac_sim
+.vscode
