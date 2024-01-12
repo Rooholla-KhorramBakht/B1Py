@@ -1,9 +1,9 @@
 import threading
 import time
 from time import sleep
-
 import numpy as np
 import pygame
+from dataclasses import dataclass
 from pygame.locals import (
     JOYAXISMOTION,
     JOYBUTTONDOWN,
@@ -15,6 +15,35 @@ from pygame.locals import (
     K_q,
 )
 
+@dataclass
+class xKeySwitch:
+    R1: int
+    L1: int
+    start: int
+    select: int
+    R2: int
+    L2: int
+    F1: int
+    F2: int
+    A: int
+    B: int
+    X: bool
+    Y: int
+    up: int
+    right: int
+    down: int
+    left: int
+
+
+@dataclass
+class xRockerBtn:
+    head: list
+    btn: xKeySwitch
+    lx: float
+    rx: float
+    ry: float
+    L2: float
+    ly: float
 
 class PyGameJoyManager:
     def __init__(self, user_callback=None):
