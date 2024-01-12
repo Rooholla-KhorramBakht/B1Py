@@ -8,8 +8,6 @@ find_package(rclcpp REQUIRED)
 
 find_package(unitree_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(lcm REQUIRED)
-
 
 message("-- CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "x86_64.*")
@@ -20,7 +18,7 @@ else()
   link_directories(${CMAKE_SOURCE_DIR}/unitree_legged_sdk/lib/cpp/arm64)
 endif()
 
-set(EXTRA_LIBS -pthread libunitree_legged_sdk.so lcm)
+set(EXTRA_LIBS -pthread libunitree_legged_sdk.so)
 
 
 set(CMAKE_CXX_FLAGS "-O3")
@@ -33,7 +31,7 @@ include_directories(
 
 add_executable(highlevel src/highlevel.cpp)
 target_link_libraries(highlevel ${EXTRA_LIBS})
-ament_target_dependencies(highlevel rclcpp unitree_msgs sensor_msgs)
+ament_target_dependencies(highlevel rclcpp unitree_msgs sensor_msgs geometry_msgs)
 
 install(TARGETS
     highlevel

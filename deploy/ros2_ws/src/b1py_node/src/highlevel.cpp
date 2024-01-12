@@ -10,57 +10,84 @@
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "sensor_msgs/msg/temperature.hpp"
 #include "sensor_msgs/msg/battery_state.hpp"
+// #include "geometry_msgs/msgs/twist.hpp"
 
 using namespace UNITREE_LEGGED_SDK;
-UDP *high_udp;
-HighCmd high_cmd = {0};
-HighState high_state = {0};
 
-rclcpp::Subscription<unitree_msgs::msg::HighCmd>::SharedPtr sub_high;
-
-rclcpp::Publisher<unitree_msgs::msg::HighState>::SharedPtr pub_high;
-rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_imu;
-rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_joint;
-
-rclcpp::TimerBase::SharedPtr timer;
-long high_count = 0;
-long low_count = 0;
-
-volatile uint64_t last_command_stamp = 0;
-void timerCallback()
-{   
-    auto stamp_now = std::chrono::high_resolution_clock::now();
-    uint64_t current_time = std::chrono::duration_cast<std::chrono::microseconds>(stamp_now.time_since_epoch()).count();
-    uint64_t latency = current_time - last_command_stamp;
-    if(latency > 0.2*1e7)
+class Custom: public rclcpp::Node
+{
+public:
+    Custom() : 
+                            Node("b1_highlevel_node"),
+                            safe(LeggedType::B1),
+                            udp(HIGHLEVEL, 8090, "192.168.123.220", 8082)
     {
-        high_cmd.velocity[0] = 0.;
-        high_cmd.velocity[1] = 0.;
-        high_cmd.yawSpeed = 0.;
+        udp.InitCmdData(cmd);
+        // udp.print = true;
+        pub_high = this->create_publisher<unitree_msgs::msg::HighState>("/B1/high_state", 1);
+        pub_imu  = this->create_publisher<sensor_msgs::msg::Imu>("/B1/imu", 1);
+        pub_joint  = this->create_publisher<sensor_msgs::msg::JointState>("/B1/joint_states", 1);
+        sub_high = this->create_subscription<unitree_msgs::msg::HighCmd>("/B1/high_cmd", 1, std::bind(&Custom::highCmdCallback, this, std::placeholders::_1));
+        timer_ = this->create_wall_timer(2ms, std::bind(&Custom::RobotControl, this));
+        udp_send_timer_ = this->create_wall_timer(3ms, std::bind(&Custom::UDPSend, this));
+        udp_receive_timer_ = this->create_wall_timer(3ms, std::bind(&Custom::UDPRecv, this));
     }
-    high_udp->SetSend(high_cmd);
-    high_udp->Send();
+    void UDPRecv();
+    void UDPSend();
+    void RobotControl();
+    void highCmdCallback(const unitree_msgs::msg::HighCmd::SharedPtr msg);
+
+    Safety safe;
+    UDP udp;
+    HighCmd cmd = {0};
+    HighState state = {0};
+    int motiontime = 0;
+    float dt = 0.002; // 0.001~0.01
+    rclcpp::Subscription<unitree_msgs::msg::HighCmd>::SharedPtr sub_high;
+    rclcpp::Publisher<unitree_msgs::msg::HighState>::SharedPtr pub_high;
+    rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_imu;
+    rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_joint;
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr udp_send_timer_;
+    rclcpp::TimerBase::SharedPtr udp_receive_timer_;
+    uint64_t last_command_stamp = 0;
     unitree_msgs::msg::HighState high_state_ros;
-    high_udp->Recv();
-    high_udp->GetRecv(high_state);
-    high_state_ros = state2rosMsg(high_state);
+};
+
+void Custom::UDPRecv()
+{
+    udp.Recv();
+}
+
+void Custom::UDPSend()
+{
+    udp.Send();
+}
+
+void Custom::RobotControl()
+{
+    udp.GetRecv(state);
+    motiontime += 2;
+
+    high_state_ros = state2rosMsg(state);
     sensor_msgs::msg::Imu imu;
     sensor_msgs::msg::JointState joint_state;
+    // printf("%d   %f\n", motiontime, state.imu.rpy[2]);
 
     // Load the IMU message
     imu.header.stamp=rclcpp::Clock().now();
     imu.header.frame_id = "b1_imu";
-    imu.orientation.w = high_state.imu.quaternion[0];
-    imu.orientation.x = high_state.imu.quaternion[1];
-    imu.orientation.y = high_state.imu.quaternion[2];
-    imu.orientation.z = high_state.imu.quaternion[3];
-    imu.linear_acceleration.x = high_state.imu.accelerometer[0];
-    imu.linear_acceleration.y = high_state.imu.accelerometer[1];
-    imu.linear_acceleration.z = high_state.imu.accelerometer[2];
-    imu.angular_velocity.x = high_state.imu.gyroscope[0];
-    imu.angular_velocity.y = high_state.imu.gyroscope[1];
-    imu.angular_velocity.z = high_state.imu.gyroscope[2];
-    // Load the jointstate messages
+    imu.orientation.w = state.imu.quaternion[0];
+    imu.orientation.x = state.imu.quaternion[1];
+    imu.orientation.y = state.imu.quaternion[2];
+    imu.orientation.z = state.imu.quaternion[3];
+    imu.linear_acceleration.x = state.imu.accelerometer[0];
+    imu.linear_acceleration.y = state.imu.accelerometer[1];
+    imu.linear_acceleration.z = state.imu.accelerometer[2];
+    imu.angular_velocity.x = state.imu.gyroscope[0];
+    imu.angular_velocity.y = state.imu.gyroscope[1];
+    imu.angular_velocity.z = state.imu.gyroscope[2];
+    // Load the joint state messages
     joint_state.header.stamp = rclcpp::Clock().now();
     joint_state.header.frame_id = "b1_imu";
     joint_state.name.push_back("FR_hip_joint");
@@ -81,40 +108,52 @@ void timerCallback()
     
     for(int i=0; i<12; i++)
     {
-        joint_state.position.push_back(high_state.motorState[i].q);
-        joint_state.velocity.push_back(high_state.motorState[i].dq);
-        joint_state.effort.push_back(high_state.motorState[i].tauEst);
+        joint_state.position.push_back(state.motorState[i].q);
+        joint_state.velocity.push_back(state.motorState[i].dq);
+        joint_state.effort.push_back(state.motorState[i].tauEst);
     }
-
     pub_joint->publish(joint_state);
     pub_imu->publish(imu);
-    pub_high->publish(high_state_ros);
+    pub_high->publish(high_state_ros); 
+
+    auto stamp_now = std::chrono::high_resolution_clock::now();
+    uint64_t current_time = std::chrono::duration_cast<std::chrono::microseconds>(stamp_now.time_since_epoch()).count();
+    uint64_t latency = current_time - last_command_stamp;
+    if(latency > 0.2*1e7)
+    {
+        cmd.velocity[0] = 0.;
+        cmd.velocity[1] = 0.;
+        cmd.yawSpeed = 0.;
+    }
+    udp.SetSend(cmd);
+
 }
 
-void highCmdCallback(const unitree_msgs::msg::HighCmd::SharedPtr msg)
+void Custom::highCmdCallback(const unitree_msgs::msg::HighCmd::SharedPtr msg)
 {
-    // printf("highCmdCallback is running !\t%ld\n", ::high_count);
     auto stamp_now = std::chrono::high_resolution_clock::now();
     last_command_stamp = std::chrono::duration_cast<std::chrono::microseconds>(stamp_now.time_since_epoch()).count();
-    high_cmd = rosMsg2Cmd(msg);
+    for (int i(0); i < 2; i++)
+    {
+        cmd.velocity[i] = msg->velocity[i];
+    }
+    cmd.yawSpeed = msg->yaw_speed;
+    for (int i(0); i < 3; i++)
+    {
+        cmd.euler[i] = msg->euler[i];
+    }
+
+    cmd.mode = msg->mode;
+    cmd.footRaiseHeight = msg->foot_raise_height;
+    cmd.bodyHeight = msg->body_height;
+    cmd.yawSpeed = msg->yaw_speed;
 }
 
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("b1_highlevel_node");
-
-    timer = node->create_wall_timer(std::chrono::milliseconds(2), timerCallback);
     printf("high level runing!\n");
-
-    high_udp = new UDP(HIGHLEVEL, 8090, "192.168.123.220", 8082);
-    high_udp->InitCmdData(high_cmd);
-    pub_high = node->create_publisher<unitree_msgs::msg::HighState>("/B1/high_state", 1);
-    pub_imu  = node->create_publisher<sensor_msgs::msg::Imu>("/B1/imu", 1);
-    pub_joint  = node->create_publisher<sensor_msgs::msg::JointState>("/B1/joint_states", 1);
-    
-    sub_high = node->create_subscription<unitree_msgs::msg::HighCmd>("/B1/high_cmd", 1, highCmdCallback);
-    rclcpp::spin(node);
+    rclcpp::spin(std::make_shared<Custom>());
     rclcpp::shutdown();
     return 0;
 }
