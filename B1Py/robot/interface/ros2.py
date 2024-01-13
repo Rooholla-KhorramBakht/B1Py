@@ -7,7 +7,7 @@ import numpy.linalg as LA
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
-from unitree_msgs.msg import HighCmd, HighState
+from B1Py.msgs.ros2.unitree import HighCmd, HighState
 
 from B1Py.robot.model import PinRobot
 from B1Py.joy import xKeySwitch, xRockerBtn
@@ -19,6 +19,39 @@ def ros2_init(args=None):
 
 def ros2_close():
     rclpy.shutdown()
+
+class ROS2ExecutorManager:
+    """A class to manage the ROS2 executor. It allows to add nodes and start the executor in a separate thread."""
+    def __init__(self):
+        self.executor = MultiThreadedExecutor()
+        self.nodes = []
+        self.executor_thread = None
+
+    def add_node(self, node: Node):
+        """Add a new node to the executor."""
+        self.nodes.append(node)
+        self.executor.add_node(node)
+
+    def _run_executor(self):
+        try:
+            self.executor.spin()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self.terminate()
+
+    def start(self):
+        """Start spinning the nodes in a separate thread."""
+        self.executor_thread = threading.Thread(target=self._run_executor)
+        self.executor_thread.start()
+
+    def terminate(self):
+        """Terminate all nodes and shutdown rclpy."""
+        for node in self.nodes:
+            node.destroy_node()
+        rclpy.shutdown()
+        if self.executor_thread:
+            self.executor_thread.join()
 
 
 class B1HighLevelReal(Node):
@@ -62,15 +95,7 @@ class B1HighLevelReal(Node):
         self.ωz_max = ωz_max
         self.ωz_min = -ωz_max
 
-        # if not test:
         self.running = True
-        self.thread = threading.Thread(target=self.run)
-        self.thread.start()
-
-    def run(self):
-        print(f"{self.node_name} ROS2 interface is running...")
-        while self.running:
-            rclpy.spin_once(self, timeout_sec=0.2)
 
     def new_state_callback(self, msg):
         """
