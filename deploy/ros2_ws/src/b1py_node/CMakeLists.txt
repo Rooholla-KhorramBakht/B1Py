@@ -8,6 +8,7 @@ find_package(rclcpp REQUIRED)
 
 find_package(unitree_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 message("-- CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "x86_64.*")

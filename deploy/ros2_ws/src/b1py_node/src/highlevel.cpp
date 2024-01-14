@@ -10,7 +10,7 @@
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "sensor_msgs/msg/temperature.hpp"
 #include "sensor_msgs/msg/battery_state.hpp"
-// #include "geometry_msgs/msgs/twist.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 
 using namespace UNITREE_LEGGED_SDK;
 
@@ -28,14 +28,17 @@ public:
         pub_imu  = this->create_publisher<sensor_msgs::msg::Imu>("/B1/imu", 1);
         pub_joint  = this->create_publisher<sensor_msgs::msg::JointState>("/B1/joint_states", 1);
         sub_high = this->create_subscription<unitree_msgs::msg::HighCmd>("/B1/high_cmd", 1, std::bind(&Custom::highCmdCallback, this, std::placeholders::_1));
+        sub_twist = this->create_subscription<geometry_msgs::msg::TwistStamped>("/B1/twist_cmd", 1, std::bind(&Custom::twistCmdCallback, this, std::placeholders::_1));
         timer_ = this->create_wall_timer(2ms, std::bind(&Custom::RobotControl, this));
         udp_send_timer_ = this->create_wall_timer(3ms, std::bind(&Custom::UDPSend, this));
         udp_receive_timer_ = this->create_wall_timer(3ms, std::bind(&Custom::UDPRecv, this));
+        
     }
     void UDPRecv();
     void UDPSend();
     void RobotControl();
     void highCmdCallback(const unitree_msgs::msg::HighCmd::SharedPtr msg);
+    void twistCmdCallback(const geometry_msgs::msg::TwistStamped::SharedPtr msg);
 
     Safety safe;
     UDP udp;
@@ -44,9 +47,11 @@ public:
     int motiontime = 0;
     float dt = 0.002; // 0.001~0.01
     rclcpp::Subscription<unitree_msgs::msg::HighCmd>::SharedPtr sub_high;
+    rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr sub_twist;
     rclcpp::Publisher<unitree_msgs::msg::HighState>::SharedPtr pub_high;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_imu;
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_joint;
+    geometry_msgs::msg::TwistStamped twist_cmd;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::TimerBase::SharedPtr udp_send_timer_;
     rclcpp::TimerBase::SharedPtr udp_receive_timer_;
@@ -147,6 +152,15 @@ void Custom::highCmdCallback(const unitree_msgs::msg::HighCmd::SharedPtr msg)
     cmd.footRaiseHeight = msg->foot_raise_height;
     cmd.bodyHeight = msg->body_height;
     cmd.yawSpeed = msg->yaw_speed;
+}
+
+void Custom::twistCmdCallback(const geometry_msgs::msg::TwistStamped::SharedPtr msg)
+{
+    auto stamp_now = std::chrono::high_resolution_clock::now();
+    last_command_stamp = std::chrono::duration_cast<std::chrono::microseconds>(stamp_now.time_since_epoch()).count();
+    cmd.velocity[0] = msg->twist.linear.x;
+    cmd.velocity[1] = msg->twist.linear.y;
+    cmd.yawSpeed = msg->twist.angular.z;
 }
 
 int main(int argc, char **argv)
