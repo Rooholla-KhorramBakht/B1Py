@@ -185,7 +185,7 @@ configurable_parameters = [
     },
     {
         "name": "publish_tf",
-        "default": "true",
+        "default": "false",
         "description": "[bool] enable/disable publishing static & dynamic TF",
     },
     {
