@@ -98,7 +98,7 @@ configurable_parameters = [
     },
     {
         "name": "depth_module.profile",
-        "default": "640,480,15",
+        "default": "320,240,15",
         "description": "depth module profile",
     },
     {
@@ -190,7 +190,7 @@ configurable_parameters = [
         "default": "0.0",
         "description": "[double] rate in Hz for publishing dynamic TF",
     },
-    {"name": "pointcloud.enable", "default": "false", "description": ""},
+    {"name": "pointcloud.enable", "default": "true", "description": ""},
     {
         "name": "pointcloud.stream_filter",
         "default": "2",
@@ -259,7 +259,7 @@ configurable_parameters = [
     },
     {
         "name": "depth_module.emitter_enabled",
-        "default": "0",
+        "default": "1",
         "description": "Do we need the laser projector?",
     },
 ]
