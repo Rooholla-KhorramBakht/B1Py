@@ -96,7 +96,7 @@ configurable_parameters = [
     {"name": "enable_infra1", "default": "true", "description": "enable infra1 stream"},
     {
         "name": "enable_infra2",
-        "default": "false",
+        "default": "true",
         "description": "enable infra2 stream",
     },
     {
