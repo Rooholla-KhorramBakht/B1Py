@@ -190,7 +190,7 @@ configurable_parameters = [
         "default": "0.0",
         "description": "[double] rate in Hz for publishing dynamic TF",
     },
-    {"name": "pointcloud.enable", "default": "true", "description": ""},
+    {"name": "pointcloud.enable", "default": "false", "description": ""},
     {
         "name": "pointcloud.stream_filter",
         "default": "2",
