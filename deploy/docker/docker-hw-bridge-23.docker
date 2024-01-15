@@ -16,7 +16,7 @@ RUN . /opt/ros/humble/setup.bash && colcon build
 RUN echo ". /ros2_ws/install/setup.bash" >> /root/.bashrc
 RUN rm /etc/ros/rosdep/sources.list.d/20-default.list
 RUN rm -r /B1Py
-CMD ["bash"].
+#CMD ["bash"].
 
-#ENTRYPOINT source /ros2_ws/install/setup.bash && ros2 launch  realsense2_camera front_front_launch.py & sleep 10 && \
-#           source /ros2_ws/install/setup.bash && ros2 launch realsense2_camera front_down_launch.py
+ENTRYPOINT source /ros2_ws/install/setup.bash && ros2 launch  realsense2_camera front_front_launch.py & sleep 10 && \
+           source /ros2_ws/install/setup.bash && ros2 launch realsense2_camera front_down_launch.py
