@@ -4,10 +4,15 @@ import time
 
 import numpy as np
 import numpy.linalg as LA
+from scipy.spatial.transform import Rotation as R
+
 import rclpy
+import tf2_ros
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
 from B1Py.msgs.ros2.unitree import HighCmd, HighState
+from rclpy.executors import MultiThreadedExecutor
+from geometry_msgs.msg import TransformStamped
 
 from B1Py.robot.model import PinRobot
 from B1Py.joy import xKeySwitch, xRockerBtn
@@ -201,3 +206,103 @@ class B1HighLevelReal(Node):
             scale = 1.0
 
         return scale * v_x, scale * v_y, np.clip(ω_z, self.ωz_min, self.ωz_max)
+
+
+class B1ExtrinsicsBroadcaster(Node):
+
+    def __init__(self, robot_name='b1'):
+        super().__init__(f'{robot_name}_tf2_broadcaster')
+
+        self.frames = []
+        # self.broadcaster = tf2_ros.TransformBroadcaster(self)
+        self.broadcaster = tf2_ros.StaticTransformBroadcaster(self)
+        self.timer = self.create_timer(0.5, self.timer_callback)
+        self.body_frame_name = f'{robot_name}_base_link'
+
+    def timer_callback(self):
+        for frame in self.frames:
+            self.broadcaster.sendTransform(frame)
+
+    def registerFrame(self, sensor_name, body_T_sensor):
+        frame = self.makeTransformStamped(self.body_frame_name, sensor_name, body_T_sensor)
+        self.frames.append(frame)
+
+    def makeTransformStamped(self, parent_frame, child_frame, T):
+        rotation = R.from_matrix(T[:3, :3]).as_quat()
+        translation = T[:3, 3]
+        static_transform_stamped = TransformStamped()
+        static_transform_stamped.header.stamp = self.get_clock().now().to_msg()
+        static_transform_stamped.header.frame_id = parent_frame
+        static_transform_stamped.child_frame_id = child_frame
+        static_transform_stamped.transform.translation.x = translation[0]
+        static_transform_stamped.transform.translation.y = translation[1]
+        static_transform_stamped.transform.translation.z = translation[2]
+        static_transform_stamped.transform.rotation.x = rotation[0]
+        static_transform_stamped.transform.rotation.y = rotation[1]
+        static_transform_stamped.transform.rotation.z = rotation[2]
+        static_transform_stamped.transform.rotation.w = rotation[3]
+        return static_transform_stamped
+
+class RealsenseExtrinsicsBroadcaster(Node):
+
+    def __init__(self, camera_name,  oir1_T_oir2, oir1_T_ocolor, oir1_T_imu=None):
+        super().__init__(f'{camera_name}_tf2_broadcaster')
+
+        self.body_frame_name = f'{camera_name}_link'
+        self.ir1_frame_name = f'{camera_name}_ir1_frame'
+        self.ir2_frame_name = f'{camera_name}_ir2_frame'
+        self.color_frame_name = f'{camera_name}_color_frame'
+        if oir1_T_imu is not None:
+            self.imu_frame_name = f'{camera_name}_imu_frame'
+        self.ir1_optical_frame_name = f'{camera_name}_ir1_optical_frame'
+        self.ir2_optical_frame_name = f'{camera_name}_ir2_optical_frame'
+        self.color_optical_frame_name = f'{camera_name}_color_optical_frame'
+
+        self.oir1_T_imu = oir1_T_imu
+        self.oir1_T_oir2 = oir1_T_oir2
+        self.oir1_T_ocolor = oir1_T_ocolor
+
+        self.ros_T_optic = np.array([[0, 0, 1, 0],
+                                [-1,0, 0, 0],
+                                [0, -1, 0, 0],
+                                [0, 0, 0, 1]]).astype(np.float64)
+
+        # self.broadcaster = tf2_ros.TransformBroadcaster(self)
+        self.broadcaster = tf2_ros.StaticTransformBroadcaster(self)
+        self.timer = self.create_timer(1, self.timer_callback)
+
+    def timer_callback(self):
+        body_T_ir1 = np.eye(4)
+        body_T_ir2 = self.ros_T_optic @ self.oir1_T_oir2 @ np.linalg.inv(self.ros_T_optic)
+        body_T_imu = self.ros_T_optic @ self.oir1_T_imu
+
+        tf1 = self.makeTransformStamped(self.body_frame_name, self.ir1_frame_name, body_T_ir1)
+        tf2 = self.makeTransformStamped(self.body_frame_name, self.ir2_frame_name, body_T_ir2)
+        if self.oir1_T_imu is not None:
+            tf3 = self.makeTransformStamped(self.body_frame_name, self.imu_frame_name, body_T_imu)
+        tf4 = self.makeTransformStamped(self.ir1_frame_name, self.ir1_optical_frame_name, self.ros_T_optic)
+        tf5 = self.makeTransformStamped(self.ir2_frame_name, self.ir2_optical_frame_name, self.ros_T_optic)
+        self.broadcaster = tf2_ros.StaticTransformBroadcaster(self)
+        self.broadcaster.sendTransform(tf1)
+        self.broadcaster.sendTransform(tf2)
+        if self.oir1_T_imu is not None:
+            self.broadcaster.sendTransform(tf3)
+        self.broadcaster.sendTransform(tf4)
+        self.broadcaster.sendTransform(tf5)
+        
+
+    def makeTransformStamped(self, parent_frame, child_frame, T):
+        rotation = R.from_matrix(T[:3, :3]).as_quat()
+        translation = T[:3, 3]
+        static_transform_stamped = TransformStamped()
+        static_transform_stamped.header.stamp = self.get_clock().now().to_msg()
+        static_transform_stamped.header.frame_id = parent_frame
+        static_transform_stamped.child_frame_id = child_frame
+        static_transform_stamped.transform.translation.x = translation[0]
+        static_transform_stamped.transform.translation.y = translation[1]
+        static_transform_stamped.transform.translation.z = translation[2]
+        static_transform_stamped.transform.rotation.x = rotation[0]
+        static_transform_stamped.transform.rotation.y = rotation[1]
+        static_transform_stamped.transform.rotation.z = rotation[2]
+        static_transform_stamped.transform.rotation.w = rotation[3]
+        return static_transform_stamped
