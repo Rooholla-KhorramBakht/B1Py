@@ -262,7 +262,7 @@ configurable_parameters = [
     },
     {
         "name": "depth_module.emitter_enabled",
-        "default": "0.",
+        "default": "0",
         "description": "Do we need the laser projector?",
     },
 ]
