@@ -22,11 +22,15 @@ from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 
 try:
-    with open('/root/b1_cfg.yaml', 'r') as file:
+    with open('/ros2_ws/src/realsense-ros/realsense2_camera/launch/b1_cfg.yaml', 'r') as file:
         cfg = yaml.safe_load(file)
     robot_name = cfg['robot_name']
+    serial_no = cfg['side_left_camera_serial_number']
+    print("Parameters loaded successfully...")
+
 except:
     robot_name = 'b1'
+    serial_no = 151222078101
 
 configurable_parameters = [
     {
@@ -41,7 +45,7 @@ configurable_parameters = [
     },
     {
         "name": "serial_no",
-        "default": "'151222078101'",
+        "default": f"'{serial_no}'",
         "description": "choose device by serial number",
     },
     {

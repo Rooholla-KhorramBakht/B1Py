@@ -21,9 +21,10 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 try:
-    with open('/root/b1_cfg.yaml', 'r') as file:
+    with open('/ros2_ws/src/realsense-ros/realsense2_camera/launch/b1_cfg.yaml', 'r') as file:
         cfg = yaml.safe_load(file)
     robot_name = cfg['robot_name']
+    print("Parameters loaded successfully...")
 except:
     robot_name = 'b1'
 
