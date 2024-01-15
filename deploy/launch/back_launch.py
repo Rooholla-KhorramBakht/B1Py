@@ -20,16 +20,22 @@ import yaml
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
+try:
+    with open('/root/b1_cfg.yaml', 'r') as file:
+        cfg = yaml.safe_load(file)
+    robot_name = cfg['robot_name']
+except:
+    robot_name = 'b1'
 
 configurable_parameters = [
     {
         "name": "camera_name",
-        "default": "back_down_cam",
+        "default": f"{robot_name}_back_down_cam",
         "description": "camera unique name",
     },
     {
         "name": "camera_namespace",
-        "default": "B1",
+        "default": f"{robot_name}",
         "description": "namespace for camera",
     },
     {
