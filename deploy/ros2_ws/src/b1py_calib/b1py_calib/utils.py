@@ -2,6 +2,38 @@ import gtsam
 import numpy as np
 from gtsam.symbol_shorthand import X
 import yaml
+from rclpy.node import Node
+import tf2_ros
+from geometry_msgs.msg import TransformStamped
+from scipy.spatial.transform import Rotation as R
+import os
+
+def SimpleHandEyeExtractFrameExtrinsics(camera_extrinsics_dir):
+    '''
+    Given the directory containing the result of simplehandeye calibration procedure, returns
+    a dictionary of 4x4 numpy arrays representing the extrinsics between the parent and child frames
+    as identified by the simplehandeye calibration procedure. The parent frame name is the same as the one 
+    published by the vicon_bridge2 ROS2 package while the child frame name is the same as the one published by  
+    realsense_ros ROS2 package.
+
+    @ param camera_extrinsics_dir: directory containing a collection yaml files from simplehandeye calibration procedure
+    @ return: dictionary of 4x4 numpy arrays representing the extrinsics between the parent and child frames info['parent_frame_id:child_frame_id'] = pose
+    '''
+    extrinsics_files = os.listdir(camera_extrinsics_dir)
+    info = {}
+    for file in extrinsics_files:
+        param_file = os.path.join(camera_extrinsics_dir, file)
+        with open(param_file, 'r') as f:
+            data = yaml.safe_load(f)
+
+        parent_frame_id = data['parent_frame']
+        for key in data.keys():
+            if key == 'parent_frame':
+                continue
+            child_frame_id = key
+            info[f'{parent_frame_id}:{child_frame_id}'] = np.array(data[key])
+    return info
+
 
 def Vicon2GtExtractParams(params_file):
     """
@@ -187,39 +219,6 @@ def KalibrExtractIntrinsics(file_path):
 
     return intrinsic_params
 
-def KalibrExtractDirectory(directory_path):
-    """
-    Process all YAML files in a directory and return camera details.
-    
-    Parameters:
-    - directory_path (str): The path to the directory containing YAML files.
-    
-    Returns:
-    - dict, dict: Two dictionaries containing extrinsic and intrinsic parameters for each camera.
-    """
-    
-    extrinsic_all = {}
-    intrinsic_all = {}
-
-    # List all files in the directory
-    for filename in os.listdir(directory_path):
-        # Check if the file is a YAML file
-        if filename.endswith(".yaml"):
-            filepath = os.path.join(directory_path, filename)
-            rig_name = os.path.splitext(filename)[0]  # Get the rig name from the filename without extension
-            
-            # Extract parameters using previously defined functions
-            extrinsic_params = KalibrExtractExtrinsics(filepath)
-            intrinsic_params = KalibrExtractIntrinsics(filepath)
-            
-            # Rename keys by appending rig_name
-            for key in extrinsic_params.keys():
-                extrinsic_all[f"{rig_name}_{key}"] = extrinsic_params[key]
-                
-            for key in intrinsic_params.keys():
-                intrinsic_all[f"{rig_name}_{key}"] = intrinsic_params[key]
-
-    return extrinsic_all, intrinsic_all
 
 class ExtrinsicCalibrationManager:
     """
@@ -328,7 +327,6 @@ class ExtrinsicCalibrationManager:
         @return: A 4x1 quaternion.
         """
         return gtsam.Rot3(T[:3, :3]).quaternion(), T[0:3, 3]
-
 
 def KalibrExtractSensorToFrameNameMap(param_file):
     '''

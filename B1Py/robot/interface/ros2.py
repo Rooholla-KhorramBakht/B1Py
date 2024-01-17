@@ -306,3 +306,40 @@ class RealsenseExtrinsicsBroadcaster(Node):
         static_transform_stamped.transform.rotation.z = rotation[2]
         static_transform_stamped.transform.rotation.w = rotation[3]
         return static_transform_stamped
+
+class B1ExtrinsicsBroadcaster(Node):
+    '''
+    This class is used to broadcast the extrinsics of the robot as TF2 ROS2 static transforms.
+    '''
+    def __init__(self, robot_name='b1'):
+        super().__init__(f'{robot_name}_tf2_broadcaster')
+
+        self.frames = []
+        # self.broadcaster = tf2_ros.TransformBroadcaster(self)
+        self.broadcaster = tf2_ros.StaticTransformBroadcaster(self)
+        self.timer = self.create_timer(0.5, self.timer_callback)
+        # self.body_frame_name = f'{robot_name}_base_link'
+
+    def timer_callback(self):
+        for frame in self.frames:
+            self.broadcaster.sendTransform(frame)
+
+    def registerFrame(self, parent, child, body_T_sensor):
+        frame = self.makeTransformStamped(parent, child, body_T_sensor)
+        self.frames.append(frame)
+
+    def makeTransformStamped(self, parent_frame, child_frame, T):
+        rotation = R.from_matrix(T[:3, :3]).as_quat()
+        translation = T[:3, 3]
+        static_transform_stamped = TransformStamped()
+        static_transform_stamped.header.stamp = self.get_clock().now().to_msg()
+        static_transform_stamped.header.frame_id = parent_frame
+        static_transform_stamped.child_frame_id = child_frame
+        static_transform_stamped.transform.translation.x = translation[0]
+        static_transform_stamped.transform.translation.y = translation[1]
+        static_transform_stamped.transform.translation.z = translation[2]
+        static_transform_stamped.transform.rotation.x = rotation[0]
+        static_transform_stamped.transform.rotation.y = rotation[1]
+        static_transform_stamped.transform.rotation.z = rotation[2]
+        static_transform_stamped.transform.rotation.w = rotation[3]
+        return static_transform_stamped
