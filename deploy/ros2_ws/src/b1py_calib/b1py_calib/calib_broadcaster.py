@@ -15,15 +15,15 @@ try:
     camera_intrinsics_dir = os.path.join(params_root_dir,'params/kalibr')
     camera_extrinsics_dir = os.path.join(params_root_dir,'params/simplehandeye')
     vicon2gt_results_dir = os.path.join(params_root_dir,'params/vicon2gt')   
-    print(camera_intrinsics_dir)
-    print(camera_extrinsics_dir)
-    print(vicon2gt_results_dir)
     vicon2gt_result_file = os.path.join(vicon2gt_results_dir,os.listdir(vicon2gt_results_dir)[0])
 
 
 except:
-    print('Error: could not find calibration parameters.')
-    # terminate the program 
+    print('Error: could not find calibration parameters. You need to store the calibration parameters in the following directories:'
+    '\n\t- Kalibr: deploy/ros2_ws/src/b1py_calib/params/kalibr'
+    '\n\t- SimpleHandEye: deploy/ros2_ws/src/b1py_calib/params/simplehandeye'
+    '\n\t- vicon2gt: deploy/ros2_ws/src/b1py_calib/params/vicon2gt'
+    '\nPlease refer to the documentation and make sure that you have the calibration parameters in the above directories and try again.')
     exit()
 
 
