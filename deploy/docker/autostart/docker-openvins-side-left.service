@@ -5,7 +5,7 @@ After=docker.service docker-hw-bridge-24.service
 
 [Service]
 Restart=always
-ExecStart=/usr/bin/docker run -e LAUNCH_FILE=b1_side_left.launch.py -v /dev/shm:/dev/shm --network host --privileged openvins:latest
+ExecStart=/usr/bin/docker run -e LAUNCH_FILE=b1_side_left.launch.py -v /dev/shm:/dev/shm --network host --privileged robocaster/openvins:latest
 ExecStop=/usr/bin/docker stop -t 2 openvins:latest
 
 [Install]
