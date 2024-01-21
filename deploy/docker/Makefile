@@ -22,13 +22,13 @@ jetson25:
 	@docker build --tag jetson:25 --no-cache . -f docker-hw-bridge-25.docker
 
 openvins_front:
-	@docker build --tag openvins:front --no-cache . -f docker-openvins-front.docker
+	@docker build --tag openvins:front . -f docker-openvins-front.docker
 
 openvins_side_left:
-	@docker build --tag openvins:side_left --no-cache . -f docker-openvins-side-left.docker
+	@docker build --tag openvins:side_left . -f docker-openvins-side-left.docker
 
 openvins_side_right:
-	@docker build --tag openvins:side_right --no-cache . -f docker-openvins-side_right.docker
+	@docker build --tag openvins:side_right . -f docker-openvins-side_right.docker
 
 jetson_debug:
 	@docker build --tag jetson:debug --no-cache . -f jetson_debug.docker
