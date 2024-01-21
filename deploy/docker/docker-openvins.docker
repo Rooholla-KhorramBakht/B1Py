@@ -22,6 +22,8 @@ RUN mkdir -p /root/openvins-ws/src && cd /root/openvins-ws/src && git clone http
 COPY configs/openvins /root/openvins-ws/src/open_vins/config
 COPY launch/openvins/ /root/openvins-ws/src/open_vins/ov_msckf/launch
 RUN cd /root/openvins-ws  && source /opt/ros/humble/setup.bash && colcon build 
+# Define an environment variable for the launch file name
+ENV LAUNCH_FILE=b1_front.launch.py
 
 # CMD ["bash"].
-ENTRYPOINT source /root/openvins-ws/install/setup.bash && ros2 launch ov_msckf b1_front.launch.py
+ENTRYPOINT source /root/openvins-ws/install/setup.bash && ros2 launch ov_msckf $LAUNCH_FILE

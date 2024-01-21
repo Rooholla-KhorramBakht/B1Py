@@ -5,8 +5,8 @@ After=docker.service
 
 [Service]
 Restart=always
-ExecStart=/usr/bin/docker run --network host --privileged openvins:side_left
-ExecStop=/usr/bin/docker stop -t 2 openvins:side_left
+ExecStart=/usr/bin/docker run -e LAUNCH_FILE=b1_side_left.launch.py --network host --privileged openvins:latest
+ExecStop=/usr/bin/docker stop -t 2 openvins:latest
 
 [Install]
 WantedBy=default.target

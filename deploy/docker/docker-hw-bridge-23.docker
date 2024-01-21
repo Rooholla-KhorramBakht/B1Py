@@ -8,7 +8,7 @@ RUN sudo apt install ros-humble-librealsense2* python3-rosdep ros-dev-tools -y
 RUN mkdir -p /ros2_ws/src
 WORKDIR /ros2_ws/src/
 RUN git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-development
-RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cp /B1Py/deploy/launch/* /ros2_ws/src/realsense-ros/realsense2_camera/launch
+RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cp deploy/docker/launch/hw_nodes/* /ros2_ws/src/realsense-ros/realsense2_camera/launch
 WORKDIR /ros2_ws
 RUN rosdep install -i --from-path src --rosdistro humble --skip-keys=librealsense2 -y
 RUN . /opt/ros/humble/setup.bash && colcon build
