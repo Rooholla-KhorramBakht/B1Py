@@ -1,9 +1,9 @@
-FROM osrf/ros:galactic-desktop
+FROM ros:humble
 SHELL ["/bin/bash", "-c"]
 
 # Dependencies we use, catkin tools is very good build system
 # Also some helper utilities for fast in terminal edits (nano etc)
-RUN apt-get update && apt-get install -y libeigen3-dev nano git
+RUN apt-get update && apt-get install -y libeigen3-dev nano git ros-humble-desktop
 
 # Ceres solver install and setup
 RUN sudo apt-get install -y cmake libgoogle-glog-dev libgflags-dev libatlas-base-dev libeigen3-dev libsuitesparse-dev libceres-dev
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y python3-dev python3-matplotlib python3-
 RUN mkdir -p /root/openvins-ws/src && cd /root/openvins-ws/src && git clone https://github.com/Rooholla-KhorramBakht/open_vins.git 
 COPY ../configs/openvins /root/openvins-ws/src/open_vins/config
 COPY ../launch/openvins/ /root/openvins-ws/src/open_vins/ov_msckf/launch
-RUN cd /root/openvins-ws  && source /opt/ros/galactic/setup.bash && colcon build 
+RUN cd /root/openvins-ws  && source /opt/ros/humble/setup.bash && colcon build 
 
 # CMD ["bash"].
 ENTRYPOINT source /root/openvins-ws/install/setup.bash && ros2 launch ov_msckf b1_front.launch.py
