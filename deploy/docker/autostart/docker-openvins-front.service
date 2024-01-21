@@ -5,6 +5,7 @@ After=docker.service docker-hw-bridge-23.service
 
 [Service]
 Restart=always
+ExecStartPre=/usr/bin/docker rm -f openvins_front || true
 ExecStart=/usr/bin/docker run --name openvins_front -e LAUNCH_FILE=b1_front.launch.py --network host -v /dev/shm:/dev/shm --privileged robocaster/openvins:latest && /bin/sleep 1
 ExecStop=/usr/bin/docker stop -t 2 openvins_front
 

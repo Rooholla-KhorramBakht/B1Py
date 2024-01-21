@@ -5,6 +5,7 @@ After=docker.service
 
 [Service]
 Restart=always
+ExecStartPre=/usr/bin/docker rm -f jetson24_hw || true
 ExecStart=/usr/bin/docker run --name jetson24_hw --network host -v /dev/shm:/dev/shm --privileged jetson:24
 ExecStop=/usr/bin/docker stop -t 2 jetson24_hw
 

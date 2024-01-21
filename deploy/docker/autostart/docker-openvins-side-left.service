@@ -5,6 +5,7 @@ After=docker.service docker-hw-bridge-24.service
 
 [Service]
 Restart=always
+ExecStartPre=/usr/bin/docker rm -f openvins_left || true
 ExecStart=/usr/bin/docker run --name openvins_left -e LAUNCH_FILE=b1_side_left.launch.py -v /dev/shm:/dev/shm --network host --privileged robocaster/openvins:latest && /bin/sleep 1
 ExecStop=/usr/bin/docker stop -t 2 openvins_left
 
