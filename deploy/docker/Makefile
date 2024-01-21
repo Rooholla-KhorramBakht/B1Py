@@ -21,6 +21,15 @@ jetson24:
 jetson25:
 	@docker build --tag jetson:25 --no-cache . -f docker-hw-bridge-25.docker
 
+openvins_front:
+	@docker build --tag openvins:front --no-cache . -f docker-openvins-front.docker
+
+openvins_side_left:
+	@docker build --tag openvins:side_left --no-cache . -f docker-openvins-side-left.docker
+
+openvins_side_right:
+	@docker build --tag openvins:side_right --no-cache . -f docker-openvins-side_right.docker
+
 jetson_debug:
 	@docker build --tag jetson:debug --no-cache . -f jetson_debug.docker
 
@@ -40,6 +49,21 @@ docker24_install:
 	@systemctl enable docker-hw-bridge-24.service
 	@systemctl start docker-hw-bridge-24.service
 
+openvins_front_install:
+	@cp autostart/docker-openvins-front.service /etc/systemd/system/
+	# @systemctl enable docker-openvins-front.service
+	# @systemctl start docker-openvins-front.service
+
+openvins_side_left_install:
+	@cp autostart/docker-openvins-side-left.service /etc/systemd/system/
+	# @systemctl enable docker-openvins-side-left.service
+	# @systemctl start docker-openvins-side-left.service
+
+openvins_side_right_install:
+	@cp autostart/docker-openvins-side-right.service /etc/systemd/system/
+	# @systemctl enable docker-openvins-side-right.service
+	# @systemctl start docker-openvins-side-right.service
+
 
 docker24_uninstall:
 	@systemctl disable docker-hw-bridge-24.service
@@ -56,6 +80,21 @@ docker25_uninstall:
 	@systemctl disable docker-hw-bridge-25.service
 	@systemctl stop docker-hw-bridge-25.service
 	@rm /etc/systemd/system/docker-hw-bridge-25.service
+
+openvins_front_uninstall:
+	@systemctl disable docker-openvins-front.service
+	@systemctl stop docker-openvins-front.service
+	@rm /etc/systemd/system/docker-openvins-front.service
+
+openvins_side_left_uninstall:
+	@systemctl disable docker-openvins-side-left.service
+	@systemctl stop docker-openvins-side-left.service
+	@rm /etc/systemd/system/docker-openvins-side-left.service
+
+openvins_side_right_uninstall:
+	@systemctl disable docker-openvins-side-right.service
+	@systemctl stop docker-openvins-side-right.service
+	@rm /etc/systemd/system/docker-openvins-side-right.service
 
 clean:
 	@docker rmi -f jetson:23	

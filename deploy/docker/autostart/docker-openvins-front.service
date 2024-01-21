@@ -1,0 +1,12 @@
+[Unit]
+Description=ROS2 device driver container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run --network host --privileged openvins:front
+ExecStop=/usr/bin/docker stop -t 2 openvins:front
+
+[Install]
+WantedBy=default.target
