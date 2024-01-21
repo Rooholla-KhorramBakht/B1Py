@@ -45,18 +45,18 @@ docker24_install:
 
 openvins_front_install:
 	@cp autostart/docker-openvins-front.service /etc/systemd/system/
-	@systemctl enable docker-openvins-front.service
-	@systemctl start docker-openvins-front.service
+	# @systemctl enable docker-openvins-front.service
+	# @systemctl start docker-openvins-front.service
 
 openvins_side_left_install:
 	@cp autostart/docker-openvins-side-left.service /etc/systemd/system/
-	@systemctl enable docker-openvins-side-left.service
-	@systemctl start docker-openvins-side-left.service
+	# @systemctl enable docker-openvins-side-left.service
+	# @systemctl start docker-openvins-side-left.service
 
 openvins_side_right_install:
 	@cp autostart/docker-openvins-side-right.service /etc/systemd/system/
-	@systemctl enable docker-openvins-side-right.service
-	@systemctl start docker-openvins-side-right.service
+	# @systemctl enable docker-openvins-side-right.service
+	# @systemctl start docker-openvins-side-right.service
 
 
 docker24_uninstall:
