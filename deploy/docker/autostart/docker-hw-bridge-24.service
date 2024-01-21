@@ -5,8 +5,8 @@ After=docker.service
 
 [Service]
 Restart=always
-ExecStart=/usr/bin/docker run --network host -v /dev/shm:/dev/shm --privileged jetson:24
-ExecStop=/usr/bin/docker stop -t 2 jetson:24
+ExecStart=/usr/bin/docker run --name jetson24_hw --network host -v /dev/shm:/dev/shm --privileged jetson:24
+ExecStop=/usr/bin/docker stop -t 2 jetson24_hw
 
 [Install]
 WantedBy=default.target
