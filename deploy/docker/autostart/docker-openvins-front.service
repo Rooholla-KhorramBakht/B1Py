@@ -1,7 +1,7 @@
 [Unit]
 Description=ROS2 device driver container
 Requires=docker.service
-After=docker.service
+After=docker.service docker-hw-bridge-23.service
 
 [Service]
 Restart=always
