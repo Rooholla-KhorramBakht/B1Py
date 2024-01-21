@@ -5,7 +5,7 @@ After=docker.service
 
 [Service]
 Restart=always
-ExecStart=/usr/bin/docker run --network host --privileged jetson:25
+ExecStart=/usr/bin/docker run --network host -v /dev/shm:/dev/shm --privileged jetson:25
 ExecStop=/usr/bin/docker stop -t 2 jetson:25
 
 [Install]

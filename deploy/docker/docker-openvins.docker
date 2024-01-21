@@ -25,5 +25,5 @@ RUN cd /root/openvins-ws  && source /opt/ros/humble/setup.bash && colcon build
 # Define an environment variable for the launch file name
 ENV LAUNCH_FILE=b1_front.launch.py
 
-# CMD ["bash"].
-ENTRYPOINT source /root/openvins-ws/install/setup.bash && ros2 launch ov_msckf $LAUNCH_FILE
+CMD ["bash"].
+# ENTRYPOINT source /root/openvins-ws/install/setup.bash && ros2 launch ov_msckf $LAUNCH_FILE
