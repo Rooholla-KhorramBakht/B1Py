@@ -6,7 +6,7 @@ After=docker.service
 [Service]
 Restart=always
 ExecStartPre=/usr/bin/docker rm -f jetson23_hw || true
-ExecStart=/usr/bin/docker run --name jetson23_hw --network host -v /dev/shm:/dev/shm --privileged jetson:23
+ExecStart=/bin/bash -c '/usr/bin/docker rm -f jetson23_hw || true; /usr/bin/docker run --name jetson23_hw --network host -v /dev/shm:/dev/shm --privileged jetson:23'
 ExecStop=/usr/bin/docker stop -t 2 jetson23_hw
 
 [Install]
