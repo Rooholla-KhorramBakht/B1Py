@@ -1,0 +1,13 @@
+FROM ros:humble
+SHELL ["/bin/bash", "-c"]
+
+RUN apt update && apt upgrade -y
+RUN sudo apt install ros-humble-realsense2-camera python3-rosdep ros-dev-tools libboost-all-dev -y
+#RUN rosdep init && rosdep update 
+
+RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cd B1Py/deploy/ros2_ws && \
+    . /opt/ros/humble/setup.bash && colcon build
+
+RUN Arch=$(uname -m) && cp -r /B1Py/deploy/ros2_ws/src/b1py_node/unitree_legged_sdk/lib/cpp/$Arch* /usr/local/lib
+CMD ["bash"].
+#ENTRYPOINT source /ros2_ws/install/setup.bash && ros2 launch  realsense2_camera back_launch.py
