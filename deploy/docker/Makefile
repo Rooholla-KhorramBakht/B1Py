@@ -11,7 +11,8 @@ help:
 
 # build:
 # 	@docker build --tag ros:vins-fusion -f ./Dockerfile ..
-
+base:
+	@docker buildx build --platform linux/arm64,linux/amd64 -t robocaster/robobase:latest -f docker-base.docker --push .
 jetson23:
 	@docker build --tag jetson:23 --no-cache . -f docker-hw-bridge-23.docker
 
