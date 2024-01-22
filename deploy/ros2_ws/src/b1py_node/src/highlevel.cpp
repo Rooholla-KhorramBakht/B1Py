@@ -12,7 +12,7 @@
 #include "sensor_msgs/msg/battery_state.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "nav_msgs/msg/odometry.hpp"
-
+#include <tf2/LinearMath/Quaternion.h>
 using namespace UNITREE_LEGGED_SDK;
 
 class Custom: public rclcpp::Node
@@ -25,11 +25,12 @@ public:
     {
         udp.InitCmdData(cmd);
         // udp.print = true;
-        pub_high = this->create_publisher<unitree_msgs::msg::HighState>("/B1/high_state", 1);
-        pub_imu  = this->create_publisher<sensor_msgs::msg::Imu>("/B1/imu", 1);
-        pub_joint  = this->create_publisher<sensor_msgs::msg::JointState>("/B1/joint_states", 1);
-        sub_high = this->create_subscription<unitree_msgs::msg::HighCmd>("/B1/high_cmd", 1, std::bind(&Custom::highCmdCallback, this, std::placeholders::_1));
-        sub_twist = this->create_subscription<geometry_msgs::msg::TwistStamped>("/B1/twist_cmd", 1, std::bind(&Custom::twistCmdCallback, this, std::placeholders::_1));
+        pub_high = this->create_publisher<unitree_msgs::msg::HighState>("/b1/high_state", 1);
+        pub_odom = this->create_publisher<nav_msgs::msg::Odometry>("/b1/odom", 1);
+        pub_imu  = this->create_publisher<sensor_msgs::msg::Imu>("/b1/imu", 1);
+        pub_joint  = this->create_publisher<sensor_msgs::msg::JointState>("/b1/joint_states", 1);
+        sub_high = this->create_subscription<unitree_msgs::msg::HighCmd>("/b1/high_cmd", 1, std::bind(&Custom::highCmdCallback, this, std::placeholders::_1));
+        sub_twist = this->create_subscription<geometry_msgs::msg::TwistStamped>("/b1/twist_cmd", 1, std::bind(&Custom::twistCmdCallback, this, std::placeholders::_1));
         timer_ = this->create_wall_timer(2ms, std::bind(&Custom::RobotControl, this));
         udp_send_timer_ = this->create_wall_timer(3ms, std::bind(&Custom::UDPSend, this));
         udp_receive_timer_ = this->create_wall_timer(3ms, std::bind(&Custom::UDPRecv, this));
@@ -52,7 +53,7 @@ public:
     rclcpp::Publisher<unitree_msgs::msg::HighState>::SharedPtr pub_high;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_imu;
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_joint;
-    rclcpp::Publisher<nav_msgs::msg::odometry>::SharedPtr pub_odom;
+    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_odom;
     geometry_msgs::msg::TwistStamped twist_cmd;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::TimerBase::SharedPtr udp_send_timer_;
@@ -79,6 +80,7 @@ void Custom::RobotControl()
     high_state_ros = state2rosMsg(state);
     sensor_msgs::msg::Imu imu;
     sensor_msgs::msg::JointState joint_state;
+    nav_msgs::msg::Odometry odom_state;
     // printf("%d   %f\n", motiontime, state.imu.rpy[2]);
 
     // Load the IMU message
@@ -95,7 +97,7 @@ void Custom::RobotControl()
     imu.angular_velocity.y = state.imu.gyroscope[1];
     imu.angular_velocity.z = state.imu.gyroscope[2];
     // Load the joint state messages
-    joint_state.header.stamp = rclcpp::Clock().now();
+    joint_state.header.stamp = imu.header.stamp;
     joint_state.header.frame_id = "b1_imu";
     joint_state.name.push_back("FR_hip_joint");
     joint_state.name.push_back("FR_thigh_joint");
@@ -112,6 +114,21 @@ void Custom::RobotControl()
     joint_state.name.push_back("RL_hip_joint");
     joint_state.name.push_back("RL_thigh_joint");
     joint_state.name.push_back("RL_calf_joint");
+
+    odom_state.header.stamp = imu.header.stamp;
+    odom_state.header.frame_id = "b1_odom";
+    odom_state.child_frame_id = "b1_imu";
+
+    // odometry states published by the onboard high-level controller
+    odom_state.pose.pose.position.x = state.position[0];
+    odom_state.pose.pose.position.y = state.position[1];
+    odom_state.pose.pose.position.z = state.position[2];
+
+    odom_state.twist.twist.linear.x = state.velocity[0];
+    odom_state.twist.twist.linear.y = state.velocity[1];
+    odom_state.twist.twist.linear.z = state.velocity[2];
+    odom_state.twist.twist.angular.z= state.yawSpeed;
+
     
     for(int i=0; i<12; i++)
     {
@@ -122,6 +139,7 @@ void Custom::RobotControl()
     pub_joint->publish(joint_state);
     pub_imu->publish(imu);
     pub_high->publish(high_state_ros); 
+    pub_odom->publish(odom_state);
 
     auto stamp_now = std::chrono::high_resolution_clock::now();
     uint64_t current_time = std::chrono::duration_cast<std::chrono::microseconds>(stamp_now.time_since_epoch()).count();

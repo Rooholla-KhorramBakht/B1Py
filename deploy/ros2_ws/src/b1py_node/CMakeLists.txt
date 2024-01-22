@@ -10,6 +10,10 @@ find_package(unitree_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_sensor_msgs REQUIRED)
 
 message("-- CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "x86_64.*")
@@ -33,7 +37,16 @@ include_directories(
 
 add_executable(highlevel src/highlevel.cpp)
 target_link_libraries(highlevel ${EXTRA_LIBS})
-ament_target_dependencies(highlevel rclcpp unitree_msgs sensor_msgs geometry_msgs nav_msgs)
+ament_target_dependencies(highlevel rclcpp 
+unitree_msgs 
+sensor_msgs 
+geometry_msgs 
+nav_msgs 
+tf2 
+tf2_geometry_msgs
+tf2_ros
+tf2_sensor_msgs
+)
 
 install(TARGETS
     highlevel
