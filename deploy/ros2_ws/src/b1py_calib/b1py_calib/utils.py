@@ -368,11 +368,14 @@ def KalibrExtractFrameExtrinsics(camera_intrinsics_dir):
         for pose in ext_params:
             parent_sensor_name = pose.split('_T_')[0]
             child_sensor_name = pose.split('_T_')[-1]
+            parent_frame_id = map[parent_sensor_name]
+
             if child_sensor_name == 'imu':
-                child_frame_id = 'b1_imu_link'
+                camera_name = parent_frame_id.split('_')[0:-4]
+                camera_name = '_'.join(camera_name)
+                child_frame_id = camera_name+'_imu_optical_frame'
             else:
                 child_frame_id = map[child_sensor_name]
 
-            parent_frame_id = map[parent_sensor_name]
             info[f'{parent_frame_id}:{child_frame_id}'] = ext_params[pose]
     return info

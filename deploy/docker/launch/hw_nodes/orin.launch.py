@@ -39,6 +39,13 @@ def generate_launch_description():
             executable='highlevel',
             name='b1_highlevel_node'
         ),
+
+        # Run the B1py calibration TF broadcaster
+        Node(
+            package='b1py_calib',
+            executable='calib_broadcaster',
+            name='b1_calib_broadcaster_node'
+        ),
         # Launch the LiDAR sensor
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rslidar.launch.py'])

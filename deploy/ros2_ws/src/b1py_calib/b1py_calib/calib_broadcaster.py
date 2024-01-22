@@ -52,8 +52,30 @@ class B1ExtrinsicsBroadcaster(Node):
 
         # Add results from vicon2gt calibration procedure
         manager.add('b1_imu_link', 'vicon/B1_BODY/B1_BODY', imu_T_vicon[0:3,0:3], imu_T_vicon[0:3, -1]) # Todo: make it configurable
+        # Add aux TFs for the cameras
+        ros_T_optic = np.array([[0, 0, 1, 0],
+                        [-1,0, 0, 0],
+                        [0, -1, 0, 0],
+                        [0, 0, 0, 1]]).astype(np.float64)
+        keys = [key for key in manager.name_to_id.keys()]
+        for key in keys:
+            if key.endswith('optical_frame'):
+                ros_frame = key.split('_optical_frame')[0]+'_frame'
+                if key.endswith('infra1_optical_frame'):
+                    body_frame = key.split('_infra1_optical_frame')[0]+'_link'
+                elif key.endswith('infra2_optical_frame'):
+                    body_frame = key.split('_infra2_optical_frame')[0]+'_link'
+                elif key.endswith('color_optical_frame'):
+                    body_frame = key.split('_color_optical_frame')[0]+'_link'
+                elif key.endswith('depth_optical_frame'):
+                    body_frame = key.split('_depth_optical_frame')[0]+'_link'
+                elif key.endswith('imu_optical_frame'):
+                    body_frame = key.split('_imu_optical_frame')[0]+'_link'
+                if key.endswith('depth_optical_frame') or key.endswith('infra1_optical_frame'):
+                    manager.add(body_frame, ros_frame, np.eye(3), np.zeros(3))
+                manager.add(ros_frame, key, ros_T_optic[0:3,0:3], ros_T_optic[0:3, -1])
         # Get all transforms to formulate the tree
-        all_tfs = manager.get_all('b1_imu_link')
+        all_tfs = manager.get_all('b1_d455_cam_link')
         # Add the transforms to the tree
         for key in all_tfs:
             parent = key.split('_wrt_')[-1]
