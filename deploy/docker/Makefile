@@ -60,15 +60,15 @@ docker25_uninstall:
 	@rm /etc/systemd/system/docker-hw-bridge-25.service
 
 docker_orin_install:
-	@cp autostart/docker-hw-bridge-25.service /etc/systemd/system/
-	@systemctl enable docker-hw-bridge-25.service
-	@systemctl start docker-hw-bridge-25.service
+	@cp autostart/docker-hw-bridge-orin.service /etc/systemd/system/
+	@systemctl enable docker-hw-bridge-orin.service
+	@systemctl start docker-hw-bridge-orin.service
 
 
 docker_orin_uninstall:
-	@systemctl disable docker-hw-bridge-25.service
-	@systemctl stop docker-hw-bridge-25.service
-	@rm /etc/systemd/system/docker-hw-bridge-25.service
+	@systemctl disable docker-hw-bridge-orin.service
+	@systemctl stop docker-hw-bridge-orin.service
+	@rm /etc/systemd/system/docker-hw-bridge-orin.service
 
 openvins_front_install:
 	@cp autostart/docker-openvins-front.service /etc/systemd/system/
