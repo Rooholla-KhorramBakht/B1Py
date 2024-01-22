@@ -9,6 +9,7 @@ find_package(rclcpp REQUIRED)
 find_package(unitree_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 message("-- CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "x86_64.*")
@@ -32,7 +33,7 @@ include_directories(
 
 add_executable(highlevel src/highlevel.cpp)
 target_link_libraries(highlevel ${EXTRA_LIBS})
-ament_target_dependencies(highlevel rclcpp unitree_msgs sensor_msgs geometry_msgs)
+ament_target_dependencies(highlevel rclcpp unitree_msgs sensor_msgs geometry_msgs nav_msgs)
 
 install(TARGETS
     highlevel

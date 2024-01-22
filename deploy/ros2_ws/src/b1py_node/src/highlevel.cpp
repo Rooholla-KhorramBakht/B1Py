@@ -11,6 +11,7 @@
 #include "sensor_msgs/msg/temperature.hpp"
 #include "sensor_msgs/msg/battery_state.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 
 using namespace UNITREE_LEGGED_SDK;
 
@@ -51,6 +52,7 @@ public:
     rclcpp::Publisher<unitree_msgs::msg::HighState>::SharedPtr pub_high;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_imu;
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_joint;
+    rclcpp::Publisher<nav_msgs::msg::odometry>::SharedPtr pub_odom;
     geometry_msgs::msg::TwistStamped twist_cmd;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::TimerBase::SharedPtr udp_send_timer_;
