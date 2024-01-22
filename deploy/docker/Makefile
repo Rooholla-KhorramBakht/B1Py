@@ -21,11 +21,11 @@ jetson24:
 jetson25:
 	@docker build --tag jetson:25 --no-cache . -f docker-hw-bridge-25.docker
 
+jetson_orin:
+	@docker build --tag jetson:orin --no-cache . -f docker-hw-bridge-orin.docker
+
 openvins:
 	@docker build --tag openvins:latest . -f docker-openvins.docker
-
-jetson_debug:
-	@docker build --tag jetson:debug --no-cache . -f jetson_debug.docker
 
 docker23_install:
 	@cp autostart/docker-hw-bridge-23.service /etc/systemd/system/
@@ -43,22 +43,6 @@ docker24_install:
 	@systemctl enable docker-hw-bridge-24.service
 	@systemctl start docker-hw-bridge-24.service
 
-openvins_front_install:
-	@cp autostart/docker-openvins-front.service /etc/systemd/system/
-	# @systemctl enable docker-openvins-front.service
-	# @systemctl start docker-openvins-front.service
-
-openvins_side_left_install:
-	@cp autostart/docker-openvins-side-left.service /etc/systemd/system/
-	# @systemctl enable docker-openvins-side-left.service
-	# @systemctl start docker-openvins-side-left.service
-
-openvins_side_right_install:
-	@cp autostart/docker-openvins-side-right.service /etc/systemd/system/
-	# @systemctl enable docker-openvins-side-right.service
-	# @systemctl start docker-openvins-side-right.service
-
-
 docker24_uninstall:
 	@systemctl disable docker-hw-bridge-24.service
 	@systemctl stop docker-hw-bridge-24.service
@@ -74,6 +58,33 @@ docker25_uninstall:
 	@systemctl disable docker-hw-bridge-25.service
 	@systemctl stop docker-hw-bridge-25.service
 	@rm /etc/systemd/system/docker-hw-bridge-25.service
+
+docker_orin_install:
+	@cp autostart/docker-hw-bridge-25.service /etc/systemd/system/
+	@systemctl enable docker-hw-bridge-25.service
+	@systemctl start docker-hw-bridge-25.service
+
+
+docker_orin_uninstall:
+	@systemctl disable docker-hw-bridge-25.service
+	@systemctl stop docker-hw-bridge-25.service
+	@rm /etc/systemd/system/docker-hw-bridge-25.service
+
+openvins_front_install:
+	@cp autostart/docker-openvins-front.service /etc/systemd/system/
+	# @systemctl enable docker-openvins-front.service
+	# @systemctl start docker-openvins-front.service
+	
+
+openvins_side_left_install:
+	@cp autostart/docker-openvins-side-left.service /etc/systemd/system/
+	# @systemctl enable docker-openvins-side-left.service
+	# @systemctl start docker-openvins-side-left.service
+
+openvins_side_right_install:
+	@cp autostart/docker-openvins-side-right.service /etc/systemd/system/
+	# @systemctl enable docker-openvins-side-right.service
+	# @systemctl start docker-openvins-side-right.service
 
 openvins_front_uninstall:
 	@systemctl disable docker-openvins-front.service

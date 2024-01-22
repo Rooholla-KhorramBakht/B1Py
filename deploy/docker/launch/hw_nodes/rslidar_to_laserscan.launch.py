@@ -26,8 +26,8 @@ def generate_launch_description():
             package='pointcloud_to_laserscan', node_executable='pointcloud_to_laserscan_node',
             remappings=[
                         # ('cloud_in', [LaunchConfiguration(variable_name='scanner'), '/cloud']),
-                        ('cloud_in', '/rslidar_points'),
-                        ('scan', [LaunchConfiguration(variable_name='scanner'), '/scan'])
+                        ('cloud_in', '/b1/rslidar_points'),
+                        ('scan', '/b1/rslidar_scan')
                        ],
             parameters=[{
                 'target_frame': 'rslidar',
@@ -39,7 +39,7 @@ def generate_launch_description():
                 'angle_increment': 0.0087,  # M_PI/360.0
                 'scan_time': 0.1,
                 'range_min': 0.45,
-                'range_max': 20.0,
+                'range_max': 100.0,
                 'use_inf': True,
                 'inf_epsilon': 1.0
             }],

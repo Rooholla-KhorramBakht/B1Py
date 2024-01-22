@@ -261,11 +261,7 @@ configurable_parameters = [
         "default": "6.",
         "description": "Timeout(seconds) between consequtive reconnection attempts",
     },
-    {
-        "name": "depth_module.emitter_enabled",
-        "default": "0.",
-        "description": "Do we need the laser projector?",
-    },
+
     {
         "name": "depth_module.emitter_enabled",
         "default": "1",
