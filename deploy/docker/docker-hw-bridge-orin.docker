@@ -2,12 +2,15 @@ FROM ros:humble
 SHELL ["/bin/bash", "-c"]
 
 RUN apt update && apt upgrade -y
-RUN sudo apt install ros-humble-realsense2-camera python3-rosdep ros-dev-tools libboost-all-dev -y
-#RUN rosdep init && rosdep update 
+RUN sudo apt install ros-humble-realsense2-camera python3-rosdep ros-dev-tools \
+libboost-all-dev libpcap-dev libeigen3-dev libboost-dev libpcl-dev libyaml-cpp-dev -y
+
+RUN cd / && git clone https://github.com/RoboSense-LiDAR/rs_driver.git && cd rs_driver && mkdir build && cd build \
+&& cmake .. && make -j$(nproc-1) && make install
 
 RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cd B1Py/deploy/ros2_ws && \
-    . /opt/ros/humble/setup.bash && colcon build
+    . /opt/ros/humble/setup.bash && cd .. && colcon build
 
-RUN Arch=$(uname -m) && cp -r /B1Py/deploy/ros2_ws/src/b1py_node/unitree_legged_sdk/lib/cpp/$Arch* /usr/local/lib
+RUN Arch=$(uname -m) && cp -r /B1Py/deploy/ros2_ws/src/b1py_node/unitree_legged_sdk/lib/cpp/$Arch/* /usr/local/lib && ldconfig
 CMD ["bash"].
 #ENTRYPOINT source /ros2_ws/install/setup.bash && ros2 launch  realsense2_camera back_launch.py
