@@ -124,11 +124,30 @@ void Custom::RobotControl()
     odom_state.pose.pose.position.y = state.position[1];
     odom_state.pose.pose.position.z = state.position[2];
 
+
     odom_state.twist.twist.linear.x = state.velocity[0];
     odom_state.twist.twist.linear.y = state.velocity[1];
     odom_state.twist.twist.linear.z = state.velocity[2];
     odom_state.twist.twist.angular.z= state.yawSpeed;
+    double position_R = 0.05;
+    double orientation_R = 0.005;
+    odom_state.pose.covariance = {
+        position_R, 0, 0, 0, 0, 0,  // Covariance for position x
+        0, position_R, 0, 0, 0, 0,  // Covariance for position y
+        0, 0, position_R, 0, 0, 0,  // Covariance for position z
+        0, 0, 0, orientation_R, 0, 0,  // Covariance for orientation roll
+        0, 0, 0, 0, orientation_R, 0,  // Covariance for orientation pitch
+        0, 0, 0, 0, 0, orientation_R   // Covariance for orientation yaw    
+    };
 
+    odom_state.twist.covariance = {
+        position_R, 0, 0, 0, 0, 0,  // Covariance for position x
+        0, position_R, 0, 0, 0, 0,  // Covariance for position y
+        0, 0, position_R, 0, 0, 0,  // Covariance for position z
+        0, 0, 0, orientation_R, 0, 0,  // Covariance for orientation roll
+        0, 0, 0, 0, orientation_R, 0,  // Covariance for orientation pitch
+        0, 0, 0, 0, 0, orientation_R   // Covariance for orientation yaw    
+    };
     
     for(int i=0; i<12; i++)
     {
