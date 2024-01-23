@@ -1,7 +1,7 @@
 FROM robocaster/robobase:latest
 SHELL ["/bin/bash", "-c"]
 RUN apt update && apt upgrade -y
-RUN apt install -y ros-foxy-robot-localization 
+RUN apt install -y ros-humble-robot-localization 
 RUN pip3 install scipy
 RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cd /B1Py/deploy/ros2_ws && \
     . /opt/ros/humble/setup.bash && colcon build
