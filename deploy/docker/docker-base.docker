@@ -1,4 +1,4 @@
-FROM ros:humble
+FROM ros:foxy
 SHELL ["/bin/bash", "-c"]
 
 RUN apt update && apt upgrade -y
