@@ -32,6 +32,6 @@ def generate_launch_description():
             remappings=[('/odometry/filtered', '/b1/odometry/filtered'),
                         ('/accel/filtered', '/b1/accel/filtered')],
             output='screen',
-            parameters=['/B1Py/deploy/docker/launch/state_estimation/ekf.launch.py'],
+            parameters=['/B1Py/deploy/docker/configs/robot_localization/ekf.yaml'],
            ),
 ])
