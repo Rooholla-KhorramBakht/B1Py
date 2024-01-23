@@ -75,12 +75,17 @@ class B1ExtrinsicsBroadcaster(Node):
                     manager.add(body_frame, ros_frame, np.eye(3), np.zeros(3))
                 manager.add(ros_frame, key, ros_T_optic[0:3,0:3], ros_T_optic[0:3, -1])
         # Get all transforms to formulate the tree
-        all_tfs = manager.get_all('b1_d455_cam_link')
+        all_tfs = manager.get_all('b1_imu_link')
         # Add the transforms to the tree
         for key in all_tfs:
             parent = key.split('_wrt_')[-1]
             child = key.split('_wrt_')[0]
             self.registerFrame(parent, child, all_tfs[key])
+        self.registerFrame('base_link', 'b1_imu_link', np.eye(4))
+        T = np.eye(4)
+        T[0,3]=0.2
+        T[2,3]=0.3
+        self.registerFrame('b1_imu_link', 'b1_rslidar', T)
 
     def timer_callback(self):
         for frame in self.frames:
