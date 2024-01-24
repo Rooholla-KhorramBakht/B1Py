@@ -3,12 +3,12 @@ FROM ${BASE_IMAGE}
 
 RUN apt-get update && apt-get install -y ros-humble-realsense2-camera ros-humble-isaac-ros-visual-slam
 
-RUN mkdir -p /builtin-ws/src && cd /builtin-ws/src && \
-    git clone https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_common.git && \
-    git clone https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_visual_slam.git
+# RUN mkdir -p /builtin-ws/src && cd /builtin-ws/src && \
+#     git clone https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_common.git && \
+#     git clone https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_visual_slam.git
 
-RUN cd /builtin-ws && \
-    source /opt/ros/humble/setup.bash && \
-    colcon build --symlink-install && source install/setup.bash
+# RUN cd /builtin-ws && \
+#     source /opt/ros/humble/setup.bash && \
+#     colcon build --symlink-install && source install/setup.bash
 # Set the Entry point to run ros2 launch isaac_ros_visual_slam isaac_ros_visual_slam_realsense.launch.py
 # CMD ["ros2", "launch", "isaac_ros_visual_slam", "isaac_ros_visual_slam_realsense.launch.py"]

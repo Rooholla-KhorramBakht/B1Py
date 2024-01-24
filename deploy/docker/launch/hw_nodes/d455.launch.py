@@ -22,7 +22,7 @@ def generate_launch_description():
                 'gyro_fps': 400,
                 'accel_fps': 200,
                 'unite_imu_method': 2,
-                'tf_publish_rate': 0.0
+                # 'tf_publish_rate': 0.0
         }]
     )
 
