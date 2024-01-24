@@ -10,7 +10,8 @@ import rclpy
 import tf2_ros
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
-from B1Py.msgs.ros2.unitree import HighCmd, HighState
+from unitree_msgs.msg._high_cmd import HighCmd
+from unitree_msgs.msg._high_state import HighState
 from rclpy.executors import MultiThreadedExecutor
 from geometry_msgs.msg import TransformStamped
 
@@ -67,8 +68,8 @@ class B1HighLevelReal(Node):
         vy_max=0.4,
         ωz_max=0.5,
         node_name="b1py_highlevel_subscriber",
-        cmd_topic_name="B1/high_cmd",
-        state_topic_name="B1/high_state",
+        cmd_topic_name="/b1/high_cmd",
+        state_topic_name="/b1/high_state",
     ):
         self.node_name = node_name
         self.cmd_topic_name = cmd_topic_name
