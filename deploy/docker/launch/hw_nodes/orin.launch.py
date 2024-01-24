@@ -51,7 +51,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rslidar.launch.py'])
         ),
         # Launch the LiDAR sensor
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(['/B1Py/deploy/docker/launch/state_estimation/ekf.launch.py'])
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(['/B1Py/deploy/docker/launch/state_estimation/ekf.launch.py'])
+        # ),
     ])
