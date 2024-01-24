@@ -6,7 +6,7 @@ After=docker.service
 [Service]
 Restart=always
 ExecStartPre=/usr/bin/docker rm -f jetson_orin_hw || true
-ExecStart=/bin/bash -c '/usr/bin/docker rm -f jetson_orin_hw || true; /usr/bin/docker run --name jetson_orin_hw --network host -v /dev/shm:/dev/shm --privileged jetson:orin'
+ExecStart=/bin/bash -c '/usr/bin/docker rm -f jetson_orin_hw || true; /usr/bin/docker run --name jetson_orin_hw --net=host --ipc=host --pid=host -v /dev/shm:/dev/shm --privileged jetson:orin'
 ExecStop=/usr/bin/docker stop -t 2 jetson_orin_hw
 
 [Install]

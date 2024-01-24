@@ -1,9 +1,9 @@
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import ThisLaunchFileDir
 from launch_ros.actions import Node
-
+import launch
 
 def generate_launch_description():
     return LaunchDescription([
@@ -33,12 +33,6 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/d455.launch.py'])
         ),
-        # Run the B1py node
-        Node(
-            package='b1py_node',
-            executable='highlevel',
-            name='b1_highlevel_node'
-        ),
 
         # Run the B1py calibration TF broadcaster
         Node(
@@ -49,5 +43,17 @@ def generate_launch_description():
         # Launch the LiDAR sensor
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rslidar.launch.py'])
+        ),
+        
+        # Run the B1py node
+         TimerAction(
+            period=launch.Duration(5),  # 5 seconds delay
+            actions=[
+                Node(
+                    package='b1py_node',
+                    executable='highlevel',
+                    name='b1_highlevel_node'
+                )
+            ]
         ),
     ])
