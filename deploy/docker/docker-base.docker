@@ -1,14 +1,17 @@
 FROM ros:foxy
 SHELL ["/bin/bash", "-c"]
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt update && apt upgrade -y
-RUN sudo apt install ros-humble-realsense2-camera python3-rosdep ros-dev-tools \
+
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+ ros-foxy-realsense2-camera python3-rosdep ros-dev-tools \
 libboost-all-dev libpcap-dev libeigen3-dev libboost-dev libpcl-dev libyaml-cpp-dev \
-ros-humble-pointcloud-to-laserscan python3-pip -y
+ros-foxy-pointcloud-to-laserscan python3-pip -y
 
 # compile and install gtsam python wrapper
 RUN cd /root && git clone https://github.com/borglab/gtsam.git && cd /root/gtsam/python && \
- pip install -r dev_requirements.txt && cmake .. -DGTSAM_BUILD_PYTHON=1 -DGTSAM_PYTHON_VERSION=3.6.10 &&\
- make python-install -j$(nproc-1)
+ pip install -r dev_requirements.txt && cmake .. -DGTSAM_BUILD_PYTHON=1 -DGTSAM_PYTHON_VERSION=3.8.10 &&\
+ make python-install -j6
 
 CMD ["bash"].
