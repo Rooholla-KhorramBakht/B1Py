@@ -2,7 +2,7 @@ import socket
 
 LIDAR_IP = "192.168.123.200"
 PC_IP =    "192.168.123.221"
-RPM = 1200
+RPM = 600
 
 
 def send_udp_payload(payload, ip, port):
