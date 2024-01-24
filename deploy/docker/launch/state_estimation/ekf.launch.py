@@ -22,7 +22,7 @@ from launch.substitutions import EnvironmentVariable
 import pathlib
 import launch.actions
 from launch.actions import DeclareLaunchArgument
-
+from launch.substitutions import ThisLaunchFileDir
 def generate_launch_description():
     return LaunchDescription([
         launch_ros.actions.Node(
@@ -32,6 +32,6 @@ def generate_launch_description():
             remappings=[('/odometry/filtered', '/b1/odometry/filtered'),
                         ('/accel/filtered', '/b1/accel/filtered')],
             output='screen',
-            parameters=['/B1Py/deploy/docker/configs/robot_localization/ekf.yaml'],
+            parameters=[os.path.join('../../configs/robot_localization/ekf.yaml')],
            ),
 ])

@@ -31,7 +31,7 @@ public:
         pub_joint  = this->create_publisher<sensor_msgs::msg::JointState>("/b1/joint_states", 1);
         sub_high = this->create_subscription<unitree_msgs::msg::HighCmd>("/b1/high_cmd", 1, std::bind(&Custom::highCmdCallback, this, std::placeholders::_1));
         sub_twist = this->create_subscription<geometry_msgs::msg::TwistStamped>("/b1/twist_cmd", 1, std::bind(&Custom::twistCmdCallback, this, std::placeholders::_1));
-        timer_ = this->create_wall_timer(5ms, std::bind(&Custom::RobotControl, this));
+        timer_ = this->create_wall_timer(2ms, std::bind(&Custom::RobotControl, this));
         udp_send_timer_ = this->create_wall_timer(3ms, std::bind(&Custom::UDPSend, this));
         udp_receive_timer_ = this->create_wall_timer(3ms, std::bind(&Custom::UDPRecv, this));
         
