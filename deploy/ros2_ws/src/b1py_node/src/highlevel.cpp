@@ -47,6 +47,7 @@ public:
     HighCmd cmd = {0};
     HighState state = {0};
     int motiontime = 0;
+    int reset = 0; 
     float dt = 0.002; // 0.001~0.01
     rclcpp::Subscription<unitree_msgs::msg::HighCmd>::SharedPtr sub_high;
     rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr sub_twist;
@@ -64,16 +65,17 @@ public:
 
 void Custom::UDPRecv()
 {
-    udp.Recv();
+    // udp.Recv();
 }
 
 void Custom::UDPSend()
 {
-    udp.Send();
+    // udp.Send();
 }
 
 void Custom::RobotControl()
 {
+    udp.Recv();
     udp.GetRecv(state);
     motiontime += 2;
 
@@ -163,15 +165,14 @@ void Custom::RobotControl()
     auto stamp_now = std::chrono::high_resolution_clock::now();
     uint64_t current_time = std::chrono::duration_cast<std::chrono::microseconds>(stamp_now.time_since_epoch()).count();
     uint64_t latency = current_time - last_command_stamp;
-    if(latency > 0.2*1e7)
-    {
-        //reset = 0;
-        //cmd.velocity[0] = 0.;
-        //cmd.velocity[1] = 0.;
-        //cmd.yawSpeed = 0.;
+    if(latency > 0.2*1e7 && reset==0)
+    {   
+        reset = 1;
+        cmd = {0};
+        udp.InitCmdData(cmd);
     }
     udp.SetSend(cmd);
-
+    udp.Send();
 }
 
 void Custom::highCmdCallback(const unitree_msgs::msg::HighCmd::SharedPtr msg)
@@ -187,11 +188,11 @@ void Custom::highCmdCallback(const unitree_msgs::msg::HighCmd::SharedPtr msg)
     {
         cmd.euler[i] = msg->euler[i];
     }
-    //reset=1;
     cmd.mode = msg->mode;
     cmd.footRaiseHeight = msg->foot_raise_height;
     cmd.bodyHeight = msg->body_height;
     cmd.yawSpeed = msg->yaw_speed;
+    reset = 0; 
 }
 
 void Custom::twistCmdCallback(const geometry_msgs::msg::TwistStamped::SharedPtr msg)
@@ -201,6 +202,7 @@ void Custom::twistCmdCallback(const geometry_msgs::msg::TwistStamped::SharedPtr 
     cmd.velocity[0] = msg->twist.linear.x;
     cmd.velocity[1] = msg->twist.linear.y;
     cmd.yawSpeed = msg->twist.angular.z;
+    reset = 0; 
 }
 
 int main(int argc, char **argv)
