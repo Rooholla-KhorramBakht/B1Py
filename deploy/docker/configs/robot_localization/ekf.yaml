@@ -85,7 +85,7 @@ ekf_filter_node:
 # do not provide some of the state variables estimated by the filter. For example, a TwistWithCovarianceStamped message
 # has no pose information, so the first six values would be meaningless in that case. Each vector defaults to all false
 # if unspecified, effectively making this parameter required for each sensor.
-        odom0_config: [true,  true,  true,
+        odom0_config: [false,  false,  true,
                        false,  false,  false,
                        true , true, true,
                        false, false, true,
@@ -126,18 +126,18 @@ ekf_filter_node:
         odom0_twist_rejection_threshold: 1.0
 
 # Further input parameter examples
-        # odom1: example/odom2
-        # odom1_config: [false, false, true,
-        #                false, false, false,
-        #                false, false, false,
-        #                false, false, true,
-        #                false, false, false]
-        # odom1_differential: false
-        # odom1_relative: true
-        # odom1_queue_size: 2
-        # odom1_pose_rejection_threshold: 2.0
-        # odom1_twist_rejection_threshold: 0.2
-        # odom1_nodelay: false
+        odom1: /visual_slam/tracking/odometry
+        odom1_config: [true, true, true,
+                       false, false, false,
+                       true, true, true,
+                       false, false, false,
+                       false, false, false]
+        odom1_differential: false
+        odom1_relative: true
+        odom1_queue_size: 2
+        odom1_pose_rejection_threshold: 2.0
+        odom1_twist_rejection_threshold: 0.2
+        odom1_nodelay: false
         # pose0: example/pose
         # pose0_config: [true,  true,  false,
         #                false, false, false,
