@@ -165,9 +165,10 @@ void Custom::RobotControl()
     uint64_t latency = current_time - last_command_stamp;
     if(latency > 0.2*1e7)
     {
-        cmd.velocity[0] = 0.;
-        cmd.velocity[1] = 0.;
-        cmd.yawSpeed = 0.;
+        //reset = 0;
+        //cmd.velocity[0] = 0.;
+        //cmd.velocity[1] = 0.;
+        //cmd.yawSpeed = 0.;
     }
     udp.SetSend(cmd);
 
@@ -186,7 +187,7 @@ void Custom::highCmdCallback(const unitree_msgs::msg::HighCmd::SharedPtr msg)
     {
         cmd.euler[i] = msg->euler[i];
     }
-
+    //reset=1;
     cmd.mode = msg->mode;
     cmd.footRaiseHeight = msg->foot_raise_height;
     cmd.bodyHeight = msg->body_height;
