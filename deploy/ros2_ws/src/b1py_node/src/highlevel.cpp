@@ -100,7 +100,7 @@ void Custom::RobotControl()
     imu.angular_velocity.z = state.imu.gyroscope[2];
     // Load the joint state messages
     joint_state.header.stamp = imu.header.stamp;
-    joint_state.header.frame_id = "b1_imu_link";
+    joint_state.header.frame_id = "trunk";
     joint_state.name.push_back("FR_hip_joint");
     joint_state.name.push_back("FR_thigh_joint");
     joint_state.name.push_back("FR_calf_joint");
