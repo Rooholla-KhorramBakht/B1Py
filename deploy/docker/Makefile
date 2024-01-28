@@ -23,7 +23,7 @@ jetson25:
 	@docker build --tag jetson:25 --no-cache . -f docker-hw-bridge-25.docker
 
 docker_highlevel:
-	@docker build --tag jetson:220 --no-cache . -f docker-hw-bridge-highlevel.docker
+	@docker build --tag jetson:highlevel --no-cache . -f docker-hw-bridge-highlevel.docker
 
 jetson_orin:
 	@docker build --tag jetson:orin --no-cache . -f docker-hw-bridge-orin.docker
