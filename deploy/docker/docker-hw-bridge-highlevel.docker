@@ -2,7 +2,6 @@ FROM robocaster/robobase:latest
 
 SHELL ["/bin/bash", "-c"]
 RUN apt update && apt upgrade -y
-RUN apt install -y ros-humble-robot-localization 
 
 RUN pip3 install scipy
 RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cd /B1Py/deploy/ros2_ws && \
@@ -10,6 +9,4 @@ RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cd /B
 
 RUN Arch=$(uname -m) && cp -r /B1Py/deploy/ros2_ws/src/b1py_node/unitree_legged_sdk/lib/cpp/$Arch/* /usr/local/lib && ldconfig
 
-#CMD ["bash"].
-
-ENTRYPOINT source /B1Py/deploy/ros2_ws/install/setup.bash && ros2 launch  /B1Py/deploy/docker/launch/hw_nodes/orin.launch.py
+ENTRYPOINT source /ros2_ws/install/setup.bash && ros2 run b1py_node highlevel && ros2 run b1py_calib calib_broadcaster 

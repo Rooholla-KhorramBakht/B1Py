@@ -22,6 +22,9 @@ jetson24:
 jetson25:
 	@docker build --tag jetson:25 --no-cache . -f docker-hw-bridge-25.docker
 
+docker_highlevel:
+	@docker build --tag jetson:220 --no-cache . -f docker-hw-bridge-highlevel.docker
+
 jetson_orin:
 	@docker build --tag jetson:orin --no-cache . -f docker-hw-bridge-orin.docker
 
@@ -59,6 +62,16 @@ docker25_uninstall:
 	@systemctl disable docker-hw-bridge-25.service
 	@systemctl stop docker-hw-bridge-25.service
 	@rm /etc/systemd/system/docker-hw-bridge-25.service
+
+docker_highlevel_install:
+	@cp autostart/docker-hw-bridge-highlevel.service /etc/systemd/system/
+	@systemctl enable docker-hw-bridge-highlevel.service
+	@systemctl start docker-hw-bridge-highlevel.service
+
+docker_highlevel_install:
+	@systemctl disable docker-hw-bridge-highlevel.service
+	@systemctl stop docker-hw-bridge-highlevel.service
+	@rm /etc/systemd/system/docker-hw-bridge-highlevel.service
 
 docker_orin_install:
 	@cp autostart/docker-hw-bridge-orin.service /etc/systemd/system/
