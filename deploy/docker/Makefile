@@ -68,7 +68,7 @@ docker_highlevel_install:
 	@systemctl enable docker-hw-bridge-highlevel.service
 	@systemctl start docker-hw-bridge-highlevel.service
 
-docker_highlevel_install:
+docker_highlevel_uninstall:
 	@systemctl disable docker-hw-bridge-highlevel.service
 	@systemctl stop docker-hw-bridge-highlevel.service
 	@rm /etc/systemd/system/docker-hw-bridge-highlevel.service
