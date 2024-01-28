@@ -9,4 +9,4 @@ RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cd /B
 
 RUN Arch=$(uname -m) && cp -r /B1Py/deploy/ros2_ws/src/b1py_node/unitree_legged_sdk/lib/cpp/$Arch/* /usr/local/lib && ldconfig
 
-ENTRYPOINT source /B1Py/deploy/ros2_ws/install/setup.bash && ros2 run b1py_node highlevel && ros2 run b1py_calib calib_broadcaster 
+ENTRYPOINT source /B1Py/deploy/ros2_ws/install/setup.bash && ros2 launch  /B1Py/deploy/docker/launch/hw_nodes/highlevel.launch.py
