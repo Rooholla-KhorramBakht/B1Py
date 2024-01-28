@@ -5,9 +5,9 @@ After=docker.service
 
 [Service]
 Restart=always
-ExecStartPre=/usr/bin/docker rm -f jetson25_hw || true
-ExecStart=/bin/bash -c '/usr/bin/docker rm -f jetson25_hw || true; /usr/bin/docker run --name jetson25_hw --network host -v /dev/shm:/dev/shm --privileged jetson:25'
-ExecStop=/usr/bin/docker stop -t 2 jetson25_hw
+ExecStartPre=/usr/bin/docker rm -f highlevel || true
+ExecStart=/bin/bash -c '/usr/bin/docker rm -f highlevel || true; /usr/bin/docker run --name highlevel --network host -v /dev/shm:/dev/shm --privileged jetson:highlevel'
+ExecStop=/usr/bin/docker stop -t 2 highlevel
 
 [Install]
 WantedBy=default.target
