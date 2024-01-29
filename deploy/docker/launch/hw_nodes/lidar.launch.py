@@ -28,32 +28,4 @@ def generate_launch_description():
             }],
             name='pointcloud_to_laserscan'
         ),
-
-        # Launch the front looking D455 camera
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/d455.launch.py'])
-        ),
-
-        # Run the B1py calibration TF broadcaster
-        Node(
-            package='b1py_calib',
-            executable='calib_broadcaster',
-            name='b1_calib_broadcaster_node'
-        ),
-        # Launch the LiDAR sensor
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rslidar.launch.py'])
-        ),
-        
-        # Run the B1py node
-         TimerAction(
-            period=launch.Duration(5),  # 5 seconds delay
-            actions=[
-                Node(
-                    package='b1py_node',
-                    executable='highlevel',
-                    name='b1_highlevel_node'
-                )
-            ]
-        ),
     ])
