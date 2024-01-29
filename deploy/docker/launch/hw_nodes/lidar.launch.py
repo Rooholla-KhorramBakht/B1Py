@@ -28,7 +28,5 @@ def generate_launch_description():
             }],
             name='pointcloud_to_laserscan'
         ),
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/lidar.launch.py'])
-        ),
+        Node(namespace='rslidar_sdk', package='rslidar_sdk', executable='rslidar_sdk_node', output='screen')
     ])
