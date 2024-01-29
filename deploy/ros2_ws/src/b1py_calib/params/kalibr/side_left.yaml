@@ -10,7 +10,7 @@ cam0:
   distortion_model: radtan
   intrinsics: [392.42745308631754, 392.8623602762483, 322.2054898770504, 232.38136198412204]
   resolution: [640, 480]
-  rostopic: /b1/b1_side_left_cam/infra1/image_rect_raw
+  rostopic: /b1/side_left_cam/infra1/image_rect_raw
   timeshift_cam_imu: -0.0005064541950668841
 cam1:
   T_cam_imu:
@@ -29,5 +29,5 @@ cam1:
   distortion_model: radtan
   intrinsics: [392.291255307801, 392.8814130965981, 323.11551822188073, 232.26433392848836]
   resolution: [640, 480]
-  rostopic: /b1/b1_side_left_cam/infra2/image_rect_raw
+  rostopic: /b1/side_left_cam/infra2/image_rect_raw
   timeshift_cam_imu: -0.0005059141784321127

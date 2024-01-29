@@ -5,7 +5,7 @@ cam0:
   distortion_model: radtan
   intrinsics: [649.7219442079164, 650.9087880080468, 643.4919986121979, 364.230784429693]
   resolution: [1280, 720]
-  rostopic: /b1/b1_d455_cam/infra1/image_rect_raw
+  rostopic: /b1/d455_cam/infra1/image_rect_raw
 cam1:
   T_cn_cnm1:
   - [0.9999978653522885, 0.0005580286764212349, 0.0019894458703526375, -0.09528404686549663]
@@ -18,7 +18,7 @@ cam1:
   distortion_model: radtan
   intrinsics: [648.8421491735166, 650.5531483774944, 641.6887596648603, 364.3362551051392]
   resolution: [1280, 720]
-  rostopic: /b1/b1_d455_cam/infra2/image_rect_raw
+  rostopic: /b1/d455_cam/infra2/image_rect_raw
 cam2:
   T_cn_cnm1:
   - [0.9999934008390668, 0.002729192862165899, 0.0023978708548585644, 0.03617530746312939]
@@ -31,4 +31,4 @@ cam2:
   distortion_model: radtan
   intrinsics: [631.0000051263577, 631.7203942778565, 638.472220859973, 364.44478405741614]
   resolution: [1280, 720]
-  rostopic: /b1/b1_d455_cam/color/image_raw
+  rostopic: /b1/d455_cam/color/image_raw

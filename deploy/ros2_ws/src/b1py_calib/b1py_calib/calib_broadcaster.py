@@ -43,21 +43,21 @@ class B1ExtrinsicsBroadcaster(Node):
         for key in info1:
             parent = key.split(':')[0]
             child = key.split(':')[1]
-            manager.add(parent, child, info1[key][0:3,0:3], info1[key][0:3, -1])
+            manager.add('b1/'+parent, 'b1/'+child, info1[key][0:3,0:3], info1[key][0:3, -1])
         # Add results from simplehandeye calibration procedure
         for key in info2:
             parent = key.split(':')[0]
             child = key.split(':')[1]
-            manager.add(parent, child, info2[key][0:3,0:3], info2[key][0:3, -1])
-
+            manager.add(parent, 'b1/'+child, info2[key][0:3,0:3], info2[key][0:3, -1])
         # Add results from vicon2gt calibration procedure
-        manager.add('b1_imu_link', 'vicon/B1_BODY/B1_BODY', imu_T_vicon[0:3,0:3], imu_T_vicon[0:3, -1]) # Todo: make it configurable
+        manager.add('b1/imu_link', 'vicon/B1_BODY/B1_BODY', imu_T_vicon[0:3,0:3], imu_T_vicon[0:3, -1]) # Todo: make it configurable
         # Add aux TFs for the cameras
         ros_T_optic = np.array([[0, 0, 1, 0],
                         [-1,0, 0, 0],
                         [0, -1, 0, 0],
                         [0, 0, 0, 1]]).astype(np.float64)
         keys = [key for key in manager.name_to_id.keys()]
+        breakpoint()
         for key in keys:
             if key.endswith('optical_frame'):
                 ros_frame = key.split('_optical_frame')[0]+'_frame'
@@ -75,17 +75,17 @@ class B1ExtrinsicsBroadcaster(Node):
                     manager.add(body_frame, ros_frame, np.eye(3), np.zeros(3))
                 manager.add(ros_frame, key, ros_T_optic[0:3,0:3], ros_T_optic[0:3, -1])
         # Get all transforms to formulate the tree
-        all_tfs = manager.get_all('b1_imu_link')
+        all_tfs = manager.get_all('b1/imu_link')
         # Add the transforms to the tree
         for key in all_tfs:
             parent = key.split('_wrt_')[-1]
             child = key.split('_wrt_')[0]
             self.registerFrame(parent, child, all_tfs[key])
-        self.registerFrame('b1_base_link', 'b1_imu_link', np.eye(4))
+        # self.registerFrame('b1_base', 'b1_imu_link', np.eye(4))
         T = np.eye(4)
         T[0,3]=0.2
         T[2,3]=0.3
-        self.registerFrame('b1_imu_link', 'b1_rslidar', T)
+        self.registerFrame('b1/imu_link', 'b1/rslidar', T)
 
     def timer_callback(self):
         for frame in self.frames:
