@@ -15,12 +15,12 @@ lidar:
       end_angle: 360               #End angle of point cloud 
       wait_for_difop: true
       min_distance: 0.2            #Minimum distance of point cloud
-      max_distance: 1.6           #Maximum distance of point cloud
+      max_distance: 50           #Maximum distance of point cloud
       use_lidar_clock: false       #True--Use the lidar clock as the message timestamp
                                    #False-- Use the system clock as the timestamp
       pcap_path: /home/robosense/lidar.pcap #The path of pcap file
     ros:
-      ros_frame_id: b1_rslidar                           #Frame id of packet message and point cloud message
+      ros_frame_id: b1/rslidar                           #Frame id of packet message and point cloud message
       ros_recv_packet_topic: /rslidar_packets          #Topic used to receive lidar packets from ROS
       ros_send_packet_topic: /b1/rslidar_packets          #Topic used to send lidar packets through ROS
       ros_send_point_cloud_topic: /b1/rslidar_points      #Topic used to send point cloud through ROS

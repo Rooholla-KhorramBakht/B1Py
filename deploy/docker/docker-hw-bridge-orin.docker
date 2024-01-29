@@ -5,7 +5,7 @@ RUN apt update && apt upgrade -y
 RUN apt install -y ros-humble-robot-localization 
 
 RUN pip3 install scipy
-RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cd /B1Py/deploy/ros2_ws && \
+RUN cd / && git clone https://github.com/Rooholla-KhorramBakht/B1Py.git && cd /B1Py/deploy/ros2_ws && git checkout develp && \
     . /opt/ros/humble/setup.bash && colcon build
 
 RUN Arch=$(uname -m) && cp -r /B1Py/deploy/ros2_ws/src/b1py_node/unitree_legged_sdk/lib/cpp/$Arch/* /usr/local/lib && ldconfig

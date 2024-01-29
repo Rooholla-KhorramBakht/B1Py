@@ -1,6 +1,7 @@
 [Unit]
 Description=RS-16 Lidar autostart
-Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
 
 [Service]
 Restart=always
