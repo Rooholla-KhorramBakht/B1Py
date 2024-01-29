@@ -57,7 +57,6 @@ class B1ExtrinsicsBroadcaster(Node):
                         [0, -1, 0, 0],
                         [0, 0, 0, 1]]).astype(np.float64)
         keys = [key for key in manager.name_to_id.keys()]
-        breakpoint()
         for key in keys:
             if key.endswith('optical_frame'):
                 ros_frame = key.split('_optical_frame')[0]+'_frame'
