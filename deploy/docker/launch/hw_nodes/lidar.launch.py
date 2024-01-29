@@ -28,4 +28,7 @@ def generate_launch_description():
             }],
             name='pointcloud_to_laserscan'
         ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/lidar.launch.py'])
+        ),
     ])
