@@ -102,8 +102,8 @@ openvins_side_right_install:
 
 orin_d455_install:
 	@cp autostart/orin_d455.service /etc/systemd/system/
-	# @systemctl enable orin_d455.service
-	# @systemctl start orin_d455.service
+	@systemctl enable orin_d455.service
+	@systemctl start orin_d455.service
 
 orin_d455_uninstall:
 	@systemctl disable orin_d455.service
@@ -112,8 +112,8 @@ orin_d455_uninstall:
 
 orin_lidar_install:
 	@cp autostart/orin_lidar.service /etc/systemd/system/
-	# @systemctl enable orin_lidar.service
-	# @systemctl start orin_lidar.service
+	@systemctl enable orin_lidar.service
+	@systemctl start orin_lidar.service
 
 orin_lidar_uninstall:
 	@systemctl disable orin_lidar.service
