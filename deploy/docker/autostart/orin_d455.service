@@ -4,7 +4,7 @@ Requires=docker.service
 
 [Service]
 Restart=always
-ExecStart=/bin/bash -c '/home/robocaster-orin/Documents/B1Py/deploy/docker/autostart/scripts/d455_start.sh'
+ExecStart=/bin/bash /home/robocaster-orin/Documents/B1Py/deploy/docker/autostart/scripts/d455_start.sh
 
 [Install]
 WantedBy=default.target
