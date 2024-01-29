@@ -16,11 +16,11 @@
         <joint name="base_static_joint" type="fixed">
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <parent link="world"/>
-            <child link="base"/>
+            <child link="base_link"/>
         </joint>
     </xacro:if> 
 
-    <link name="base">
+    <link name="base_link">
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
@@ -31,7 +31,7 @@
 
     <joint name="floating_base" type="fixed">
         <origin rpy="0 0 0" xyz="0 0 0"/>
-        <parent link="base"/>
+        <parent link="base_link"/>
         <child link="trunk"/>
     </joint>
 
@@ -91,21 +91,6 @@
             </geometry>
         </collision>
     </link>
-
-    <link name="b1_rslidar">
-        <visual>
-            <origin rpy="0 0 0" xyz="0 0 0"/>
-            <geometry>
-                <box size="0.2 0.2 0.2"/>
-            </geometry>
-        </visual>
-    </link>
-
-    <joint name="lidar_joint" type="fixed">
-        <parent link="imu_link"/>
-        <child link="b1_rslidar"/>
-        <origin rpy="0 0 0" xyz="0.2 0 0.3"/>
-    </joint>
 
     <link name="virtual_arm">
         <visual>

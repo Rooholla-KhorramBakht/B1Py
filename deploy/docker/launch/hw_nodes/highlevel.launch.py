@@ -5,13 +5,13 @@ from launch.substitutions import Command, FindExecutable, LaunchConfiguration
 from launch.substitutions import ThisLaunchFileDir
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
-
+import os
 
 
 def generate_launch_description():
 
     b1_xacro_file = os.path.join(
-        get_package_share_directory("b1_description"), "robots", "robot.xacro"
+        get_package_share_directory("b1_description"), "robots", "robot_virtual_arm.xacro"
     )
     robot_description = Command(
         [FindExecutable(name="xacro"), " ", b1_xacro_file, " DEBUG:=", 'false']
