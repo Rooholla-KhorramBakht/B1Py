@@ -81,7 +81,7 @@ class B1ExtrinsicsBroadcaster(Node):
             parent = key.split('_wrt_')[-1]
             child = key.split('_wrt_')[0]
             self.registerFrame(parent, child, all_tfs[key])
-        self.registerFrame('base_link', 'b1_imu_link', np.eye(4))
+        self.registerFrame('b1_base_link', 'b1_imu_link', np.eye(4))
         T = np.eye(4)
         T[0,3]=0.2
         T[2,3]=0.3

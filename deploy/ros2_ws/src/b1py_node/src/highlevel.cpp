@@ -100,26 +100,26 @@ void Custom::RobotControl()
     imu.angular_velocity.z = state.imu.gyroscope[2];
     // Load the joint state messages
     joint_state.header.stamp = imu.header.stamp;
-    joint_state.header.frame_id = "trunk";
-    joint_state.name.push_back("FR_hip_joint");
-    joint_state.name.push_back("FR_thigh_joint");
-    joint_state.name.push_back("FR_calf_joint");
+    joint_state.header.frame_id = "b1_trunk";
+    joint_state.name.push_back("b1_FR_hip_joint");
+    joint_state.name.push_back("b1_FR_thigh_joint");
+    joint_state.name.push_back("b1_FR_calf_joint");
 
-    joint_state.name.push_back("FL_hip_joint");
-    joint_state.name.push_back("FL_thigh_joint");
-    joint_state.name.push_back("FL_calf_joint");
+    joint_state.name.push_back("b1_FL_hip_joint");
+    joint_state.name.push_back("b1_FL_thigh_joint");
+    joint_state.name.push_back("b1_FL_calf_joint");
 
-    joint_state.name.push_back("RR_hip_joint");
-    joint_state.name.push_back("RR_thigh_joint");
-    joint_state.name.push_back("RR_calf_joint");
+    joint_state.name.push_back("b1_RR_hip_joint");
+    joint_state.name.push_back("b1_RR_thigh_joint");
+    joint_state.name.push_back("b1_RR_calf_joint");
 
-    joint_state.name.push_back("RL_hip_joint");
-    joint_state.name.push_back("RL_thigh_joint");
-    joint_state.name.push_back("RL_calf_joint");
+    joint_state.name.push_back("b1_RL_hip_joint");
+    joint_state.name.push_back("b1_RL_thigh_joint");
+    joint_state.name.push_back("b1_RL_calf_joint");
 
     odom_state.header.stamp = imu.header.stamp;
-    odom_state.header.frame_id = "odom";
-    odom_state.child_frame_id = "base_link";
+    odom_state.header.frame_id = "b1_odom";
+    odom_state.child_frame_id = "b1_base_link";
 
     // odometry states published by the onboard high-level controller
     odom_state.pose.pose.position.x = state.position[0];
