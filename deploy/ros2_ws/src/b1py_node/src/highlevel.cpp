@@ -87,7 +87,7 @@ void Custom::RobotControl()
 
     // Load the IMU message
     imu.header.stamp=rclcpp::Clock().now();
-    imu.header.frame_id = "imu_link";
+    imu.header.frame_id = "b1/imu_link";
     imu.orientation.w = state.imu.quaternion[0];
     imu.orientation.x = state.imu.quaternion[1];
     imu.orientation.y = state.imu.quaternion[2];
@@ -118,8 +118,8 @@ void Custom::RobotControl()
     joint_state.name.push_back("RL_calf_joint");
 
     odom_state.header.stamp = imu.header.stamp;
-    odom_state.header.frame_id = "odom";
-    odom_state.child_frame_id = "base_link";
+    odom_state.header.frame_id = "b1/odom";
+    odom_state.child_frame_id = "b1/base_link";
 
     // odometry states published by the onboard high-level controller
     odom_state.pose.pose.position.x = state.position[0];
