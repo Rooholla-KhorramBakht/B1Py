@@ -1,0 +1,10 @@
+[Unit]
+Description=RS-16 Lidar autostart
+Requires=docker.service
+
+[Service]
+Restart=always
+ExecStart=/bin/bash -c '/home/robocaster-orin/Documents/B1Py/deploy/docker/autostart/scripts/lidar_start.sh'
+
+[Install]
+WantedBy=default.target

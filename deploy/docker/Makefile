@@ -100,6 +100,26 @@ openvins_side_right_install:
 	# @systemctl enable docker-openvins-side-right.service
 	# @systemctl start docker-openvins-side-right.service
 
+orin_d455_install:
+	@cp autostart/orin_d455.service /etc/systemd/system/
+	# @systemctl enable orin_d455.service
+	# @systemctl start orin_d455.service
+
+orin_d455_uninstall:
+	@systemctl disable orin_d455.service
+	@systemctl stop orin_d455.service
+	@rm /etc/systemd/system/orin_d455.service
+
+orin_lidar_install:
+	@cp autostart/orin_lidar.service /etc/systemd/system/
+	# @systemctl enable orin_lidar.service
+	# @systemctl start orin_lidar.service
+
+orin_lidar_uninstall:
+	@systemctl disable orin_lidar.service
+	@systemctl stop orin_lidar.service
+	@rm /etc/systemd/system/orin_lidar.service
+
 openvins_front_uninstall:
 	@systemctl disable docker-openvins-front.service
 	@systemctl stop docker-openvins-front.service
