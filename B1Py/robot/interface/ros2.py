@@ -124,12 +124,12 @@ class B1HighLevelReal(Node):
     def getJointStates(self):
         """Returns the joint angles (q) and velocities (dq) of the robot"""
         motorStates = self.state.motor_state
-        _q, _dq = zip(
-            *[(motorState.q, motorState.dq) for motorState in motorStates[:12]]
+        _q, _dq, _tau_est = zip(
+            *[(motorState.q, motorState.dq, motorState.tau_est) for motorState in motorStates[:12]]
         )
-        q, dq = np.array(_q), np.array(_dq)
+        q, dq, tau_est = np.array(_q), np.array(_dq), np.array(_tau_est)
 
-        return q, dq
+        return q, dq, tau_est
 
     def getRemoteState(self):
         """Returns the state of the remote control"""

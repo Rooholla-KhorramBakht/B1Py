@@ -10,8 +10,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     user_debug_parameter_name = "user_debug"
     user_debug = LaunchConfiguration(user_debug_parameter_name)
-    # prefix = LaunchConfiguration("prefix", default="b1/")
-    prefix = 'b1'
+    prefix = LaunchConfiguration("prefix", default="b1/")
 
     b1_xacro_file = os.path.join(
         get_package_share_directory("b1_description"), "robots", "robot.xacro"
@@ -40,7 +39,7 @@ def generate_launch_description():
                              "frame_prefix": prefix+"/"}],
                 remappings=[
                     ("/joint_states", f"/{prefix}/joint_states"),
-                    # ("/robot_description", f"/{prefix}/robot_description")
+                    ("/robot_description", f"/{prefix}/robot_description")
                 ],
             ),
             Node(
