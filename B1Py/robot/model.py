@@ -12,7 +12,7 @@ class PinRobot:
         self.urdf_path = self.package_directory + "/b1.urdf"
         self.robot = pin.RobotWrapper.BuildFromURDF(
             self.urdf_path, self.package_directory
-        )
+        , pin.JointModelFreeFlyer())
 
         self._setup_self_collision_checker()
 
@@ -115,7 +115,7 @@ class B1Model:
         self.urdf_path = self.package_directory + "/b1.urdf"
         self.robot = pin.RobotWrapper.BuildFromURDF(
             self.urdf_path, self.package_directory
-        )
+        , pin.JointModelFreeFlyer())
         self.data = self.robot.data
         # Standing joint configuration in Unitree Joint order
         self.ef_frames = ['FR_foot', 'FL_foot', 'RR_foot', 'RL_foot']
