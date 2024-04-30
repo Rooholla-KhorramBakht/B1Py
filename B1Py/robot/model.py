@@ -211,19 +211,13 @@ class B1Model:
 
         return joint_angles
         
-    def forwardKinematics(self, T, q):
+    def forwardKinematics(self):
         """
-        Computes the forward kinematics for the robot given a transformation matrix and joint configuration.
-
-        Args:
-            T (np.ndarray): 4x4 Transformation matrix representing the base pose of the robot.
-            q (np.ndarray): A numpy array of size 12 representing the joint configurations in FR, FL, RR, RL order.
+        Extracts the result of forward kinematics.
 
         Returns:
             dict: A dictionary containing the poses of specified frames in the robot.
         """
-        q_ = np.hstack([pin.SE3ToXYZQUATtuple(pin.SE3(T)), q[self.q_reordering_idx]])
-        self.robot.framesForwardKinematics(q_)
         ef_frames = ['base','FR_foot', 'FL_foot', 'RR_foot', 'RL_foot']
         data = {}
         return {frame:self.robot.data.oMf[self.robot.model.getFrameId(frame)].homogeneous \
@@ -271,12 +265,12 @@ class B1Model:
             q (np.ndarray): A numpy array of size 19 representing the [x, y, z, qx, qy, qz, qw] and joint configurations in FR, FL, RR, RL order.
             dq (np.ndarray): A numpy array of size 18 representing the [vx, vy, vz, wx, wy, wz] and joint configurations in FR, FL, RR, RL order.
         """
-        self.robot.centroidalMomentum(q_,dq_)
-        self.nle_ = self.robot.nle(q_, dq_)[self.dq_reordering_idx]
-        self.g_ = self.robot.gravity(q_)[self.dq_reordering_idx]
-        self.M_ = self.robot.mass(q_)[self.dq_reordering_idx,:]
+        self.robot.centroidalMomentum(q,dq)
+        self.nle_ = self.robot.nle(q, dq)[self.dq_reordering_idx]
+        self.g_ = self.robot.gravity(q)[self.dq_reordering_idx]
+        self.M_ = self.robot.mass(q)[self.dq_reordering_idx,:]
         self.M_ = self.M_[:,self.dq_reordering_idx]
-        self.Minv_ = pin.computeMinverse(self.robot.model, self.robot.data, q_)[self.dq_reordering_idx,:]
+        self.Minv_ = pin.computeMinverse(self.robot.model, self.robot.data, q)[self.dq_reordering_idx,:]
         self.Minv_ = self.Minv_[:,self.dq_reordering_idx]
         
 
